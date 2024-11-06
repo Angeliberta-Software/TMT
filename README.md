@@ -1,7 +1,7 @@
-# TMT
+# TMT - Talking Meta Trader
 An NVDA plugin for Meta Trader 5
 
-Currently this is a super pre alpha testing version. Bugs are included.
+Currently this is a super pre alpha activly developing version. Bugs are included.
 ## Requirements
  Meta Trader 5 x64
 ## Basic Navigation
@@ -19,4 +19,4 @@ Market watch window is currently very poorly accessible, but it is possible, for
 ### Announce
 * Control+P: current profile.
 * Control+0: terminal current time.
-* NVDA+T: announces active chart.
+* NVDA+T: announces active chart instrument.
