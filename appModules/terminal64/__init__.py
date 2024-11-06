@@ -1,9 +1,9 @@
 import appModuleHandler
 import api
-import scriptHandler
 from scriptHandler import script
 from logHandler import log
 from ui import message
+from controlTypes import role
 
 class AppModule(appModuleHandler.AppModule):
 
@@ -16,7 +16,7 @@ class AppModule(appModuleHandler.AppModule):
 	@script(description="Announce current profile", gesture="kb:control+p")
 	def script_announceCurrentProfile(self, gesture):
 		for o in self.getElements():
-			if o.role == 27: # TODO Find correct enumeration in NVDA docs
+			if o.role == role.Role.STATUSBAR:
 				message(o.children[1].name)
 				break
 
