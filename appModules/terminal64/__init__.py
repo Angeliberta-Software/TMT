@@ -13,6 +13,10 @@ class AppModule(appModuleHandler.AppModule):
 	def getElements(self):
 		return api.getForegroundObject().children
 
+	def processTitle(self):
+		titleElements = api.getForegroundObject().name.split("-")
+		return titleElements[len(titleElements) - 1].strip()
+
 	@script(description="Announce current profile", gesture="kb:control+p")
 	def script_announceCurrentProfile(self, gesture):
 		for o in self.getElements():
@@ -22,9 +26,7 @@ class AppModule(appModuleHandler.AppModule):
 
 	@script(gesture="kb:nvda+t")
 	def script_fixWindowTitle(self, gesture):
-		titleElements = api.getForegroundObject().name.split("-")
-		msg = titleElements[len(titleElements) - 1].strip()
-		message(msg)
+		message(self.processTitle())
 
 	@script(description = "Focus on toolbox window", gesture="kb:control+1")
 	def script_focusOnToolboxWindow(self, gesture):
@@ -68,3 +70,8 @@ class AppModule(appModuleHandler.AppModule):
 				nameElements = obj.children[2].name.split(": ")
 				message(nameElements[1])
 				break
+
+	def event_gainFocus(self, obj, nextHandler):
+		if obj.role == role.Role.PANE:
+			message(self.processTitle())
+		nextHandler()
