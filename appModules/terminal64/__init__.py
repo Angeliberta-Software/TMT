@@ -1,5 +1,8 @@
 import appModuleHandler
 import api
+import contentRecog
+import contentRecog.recogUi
+import contentRecog.uwpOcr
 from scriptHandler import script
 from logHandler import log
 from ui import message
@@ -12,6 +15,7 @@ class AppModule(appModuleHandler.AppModule):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.ocrRequested = False
 
 	def getElements(self):
 		return api.getForegroundObject().children
@@ -74,7 +78,20 @@ class AppModule(appModuleHandler.AppModule):
 				message(nameElements[1])
 				break
 
+	@script(description="Show toolbox tabs.", gesture="kb:control+shift+1", category=GESTURE_CATEGORY_NAME)
+	def script_showToolboxTabs(self, gesture):
+		for obj in self.getElements():
+			if obj.name == "Toolbox":
+				self.ocrRequested = True
+				obj.children[0].children[0].setFocus()
+				break
+
 	def event_gainFocus(self, obj, nextHandler):
+		if self.ocrRequested:
+			recognizor = contentRecog.uwpOcr.UwpOcr(None)
+			contentRecog.recogUi.recognizeNavigatorObject(recognizor)
+			self.ocrRequested = False
+			return
 		if obj.role == role.Role.PANE:
 			message(self.processTitle())
 		nextHandler()
