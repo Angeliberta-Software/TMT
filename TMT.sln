@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TMT", "TMT.pyproj", "{82E1974E-113D-440C-8457-416F8B686749}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ChartReader", "ChartReader\ChartReader.pyproj", "{D0B254EB-7399-4A66-8E6A-9CCBD1450912}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{82E1974E-113D-440C-8457-416F8B686749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{82E1974E-113D-440C-8457-416F8B686749}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0B254EB-7399-4A66-8E6A-9CCBD1450912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0B254EB-7399-4A66-8E6A-9CCBD1450912}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
