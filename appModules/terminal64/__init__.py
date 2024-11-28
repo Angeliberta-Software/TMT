@@ -1,3 +1,6 @@
+import socket
+from _thread import start_new_thread
+from typing import Self
 import appModuleHandler
 import api
 import contentRecog
@@ -23,6 +26,23 @@ class AppModule(appModuleHandler.AppModule):
 	def processTitle(self):
 		titleElements = api.getForegroundObject().name.split("-")
 		return titleElements[len(titleElements) - 1].strip()
+
+	def callChartReader(self):
+		client = socket.socket()
+		hostName = socket.gethostname()
+		port = 5678
+		try:
+			client.connect((hostName, port))
+			data = self.processTitle().encode()
+			client.send(data)
+			response = client.recv(1024).decode()
+			if not response == "ok":
+				message("Failed to connect to chart reader")
+				log.error("Failed to connect to chart reader")
+			client.close()
+		except Exception as e:
+			message("Failed to connect to chart reader")
+			log.error("Failed to connect to chart reader. " + str(e))
 
 	@script(description="Announce current profile", gesture="kb:control+p", category=GESTURE_CATEGORY_NAME)
 	def script_announceCurrentProfile(self, gesture):
@@ -95,3 +115,7 @@ class AppModule(appModuleHandler.AppModule):
 		if obj.role == role.Role.PANE:
 			message(self.processTitle())
 		nextHandler()
+
+	@script(description="Sends symbol and timeframe info to chart reader app", gesture="kb:control+shift+0", category=GESTURE_CATEGORY_NAME)
+	def script_callChartReader(self, gesture):
+		start_new_thread(AppModule.callChartReader, (self, ))
