@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>ChartReader</Name>
     <RootNamespace>ChartReader</RootNamespace>
+    <InterpreterId>CondaEnv|CondaEnv|ChartReaderEnv</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,6 +25,9 @@
     <Compile Include="log_config.py" />
     <Compile Include="Server.py" />
     <Compile Include="__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|ChartReaderEnv" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
