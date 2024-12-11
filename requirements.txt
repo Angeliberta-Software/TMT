@@ -1,1 +1,3 @@
 MetaTrader5
+wxPython
+pyinstaller
