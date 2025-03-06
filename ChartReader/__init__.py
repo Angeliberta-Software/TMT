@@ -1,43 +1,47 @@
 import MetaTrader5 as mt5
 import wx
+from mainFrame import MainFrame
+import logging
+from log_config import setup_logging
+from server import Server
 
-class MyFrame(wx.Frame):
-	def __init__(self):
-		super().__init__(parent=None, title="TMT")
-		main_sizer = wx.BoxSizer(wx.VERTICAL)
 
-		self.ctrlpanel = wx.Panel(self)
-		ctrlpanel_sizer = wx.BoxSizer(wx.HORIZONTAL)
-		self.initialize_btn = wx.Button(self.ctrlpanel, label="initialize MetaTrader")
-		ctrlpanel_sizer.Add(self.initialize_btn, 0, wx.ALL | wx.CENTER, 5)
-		self.initialize_btn.Bind(wx.EVT_BUTTON, self.on_press)
-		self.ctrlpanel.SetSizer(ctrlpanel_sizer)
-		main_sizer.Add(self.ctrlpanel, 0, wx.ALL, 5)
-
-		self.infopanel = wx.Panel(self)
-		infopanel_sizer = wx.BoxSizer(wx.HORIZONTAL)
-		self.label1 = wx.StaticText(self.infopanel, label=f'mt5 version: {mt5.version()}')
-		self.label2 = wx.StaticText(self.infopanel, label='Terminal off')
-		infopanel_sizer.Add(self.label1, 0, wx.ALL, 5)
-		infopanel_sizer.Add(self.label2, 0, wx.ALL, 5)
-		self.infopanel.SetSizer(infopanel_sizer)
-		main_sizer.Add(self.infopanel, 0, wx.ALL, 5)
-
-		self.SetSizer(main_sizer)
-		self.Show()
-
-	def on_press(self, event):
-		if not mt5.initialize():
-			wx.MessageBox('Failed to initialize mt5. Try again.', 'Error', wx.OK | wx.ICON_ERROR)
-			mt5.shutdown()
-		else:
-			self.label1.Label = f'mt5 version: {mt5.version()}'
-			self.label2.Label = str(mt5.terminal_info())
+def serverCallBack(data):
+	print(f'Data recieved: {data}')
 
 
 if __name__ == '__main__':
-	app = wx.App()
-	frame = MyFrame()
-	app.MainLoop()
-	mt5.shutdown()
-	print('closed')
+	setup_logging()
+	logger = logging.getLogger(__name__)
+
+	logger.info('Starting server...')
+	try:
+		server = Server()
+		server.callback = serverCallBack
+		server.start()
+	except Exception as e:
+		logger.error('Failed to start server.', exc_info=True)
+		wx.MessageBox('Failed to start server. Aborting...', 'Error', wx.OK | wx.ICON_ERROR)
+		exit()
+
+	logger.info('Initializing application GUI...')
+	try:
+		app = wx.App()
+		frame = MainFrame()
+		app.MainLoop()
+	except Exception as e:
+		logger.error('Failed to start GUI.', exc_info=True)
+		wx.MessageBox('Failed to initialize GUI. Aborting...', 'Error', wx.OK | wx.ICON_ERROR)
+		exit()
+
+	logger.info('Disconnect from MT5')
+	try:
+		mt5.shutdown()
+	except Exception as e:
+		logger.error('Failed to disconnect from MT5', exc_info=True)
+
+	try:
+		logger.info('Stopping server...')
+		server.stop()
+	except Exception as e:
+		logger.error('Failed to stop server.', exc_info=True)

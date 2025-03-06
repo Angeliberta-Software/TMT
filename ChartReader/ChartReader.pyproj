@@ -23,7 +23,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="log_config.py" />
-    <Compile Include="Server.py" />
+    <Compile Include="mainFrame.py" />
+    <Compile Include="server.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>

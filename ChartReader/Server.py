@@ -16,6 +16,9 @@ class Server:
 
 	def __processConnection(self):
 		while True:
+			if isinstance(self.server_socket, socket.socket):
+				break
+
 			try:
 				connection, _ = self.server_socket.accept()
 				data = connection.recv(1024)
