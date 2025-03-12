@@ -9,14 +9,17 @@ class Server:
 
 	def __init__(self):
 		self.server_socket = socket.socket()
-		hostName = socket.gethostname()
-		port = 5678
-		self.server_socket.bind((hostName, port))
+		self.hostName = socket.gethostname()
+		self.port = 5678
+		self.server_socket.bind((self.hostName, self.port))
 		self.callback = None
+		self.isRunning = False
 
 	def __processConnection(self):
 		while True:
-			if isinstance(self.server_socket, socket.socket):
+			if not self.isRunning:
+				if isinstance(self.server_socket, socket.socket):
+					self.server_socket.close()
 				break
 
 			try:
@@ -32,12 +35,13 @@ class Server:
 				logger.error("Failed to serve a connection.", exc_info=True)
 
 	def start(self):
+		self.isRunning = True
 		self.server_socket.listen(1)
 		start_new_thread(Server.__processConnection, (self, ))
-		logger.info("Server started.")
+		logger.info(f"Server started. Now listening on {self.hostName}:{self.port}")
 
 	def stop(self):
-		self.server_socket.close()
+		self.isRunning = False
 		logger.info('Server stopped.')
 
 # Example of use
