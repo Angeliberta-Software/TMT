@@ -4,10 +4,7 @@ from mainFrame import MainFrame
 import logging
 from log_config import setup_logging
 from server import Server
-
-
-def serverCallBack(data):
-	print(f'Data recieved: {data}')
+import reader
 
 
 if __name__ == '__main__':
@@ -17,7 +14,7 @@ if __name__ == '__main__':
 	logger.info('Starting server...')
 	try:
 		server = Server()
-		server.callback = serverCallBack
+		server.callback = reader.recieve_data
 		server.start()
 	except Exception as e:
 		logger.error('Failed to start server.', exc_info=True)

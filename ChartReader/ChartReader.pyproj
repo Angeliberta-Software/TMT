@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="log_config.py" />
     <Compile Include="mainFrame.py" />
+    <Compile Include="reader.py" />
     <Compile Include="server.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
