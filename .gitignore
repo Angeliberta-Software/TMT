@@ -57,6 +57,7 @@ cover/
 
 # Django stuff:
 *.log
+app.log.*
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -164,3 +165,4 @@ cython_debug/
 
 .vs/
 .nvdasource/
+ChartReader/chart.html

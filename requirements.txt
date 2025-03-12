@@ -1,3 +1,5 @@
 MetaTrader5
 wxPython
 pyinstaller
+accessible-output2
+pandas
