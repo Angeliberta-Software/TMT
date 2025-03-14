@@ -3,6 +3,7 @@ import wx
 import logging
 import reader
 import accessible_output2.outputs
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,19 @@ class MainFrame(wx.Frame):
 		self.showInTable_btn.Bind(wx.EVT_BUTTON, self.on_shoInTable_btn_press)
 		self.showInTable_btn.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
 
+		self.play_highlow_checkbox = wx.CheckBox(self.ctrlpanel, label='Play high-low')
+		self.play_highlow_checkbox.SetValue(False)
+		self.play_highlow_checkbox.Bind(wx.EVT_CHECKBOX, self.on_playHighLowCheckbox_press)
+		self.play_highlow_checkbox.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
+		ctrlpanel_sizer.Add(self.play_highlow_checkbox, 0, wx.ALL | wx.CENTER, 5)
+
+		barsCountLabel = wx.StaticText(self.ctrlpanel, label='Bars count: ')
+		self.barsCount_textCtrl = wx.TextCtrl(self.ctrlpanel, size=(200, -1))
+		self.barsCount_textCtrl.Value = str(reader.number_of_bars_to_recieve)
+		self.barsCount_textCtrl.Bind(wx.EVT_TEXT, self.on_barCountTextCtrl_change)
+		ctrlpanel_sizer.Add(self.barsCount_textCtrl, 0, wx.ALL | wx.CENTER, 5)
+		ctrlpanel_sizer.Add(barsCountLabel, 0, wx.ALL | wx.CENTER, 5)
+
 		self.ctrlpanel.SetSizer(ctrlpanel_sizer)
 		main_sizer.Add(self.ctrlpanel, 0, wx.ALL, 5)
 
@@ -46,6 +60,7 @@ class MainFrame(wx.Frame):
 		self.Show()
 
 	def on_initialize_btn_press(self, event):
+		logger.info('Initializing MT5 connection...')
 		if not mt5.initialize():
 			wx.MessageBox('Failed to initialize mt5. Try again.', 'Error', wx.OK | wx.ICON_ERROR)
 			logger.error('Failed to initialize MT5 connection.')
@@ -53,6 +68,7 @@ class MainFrame(wx.Frame):
 		else:
 			self.label1.Label = f'mt5 version: {mt5.version()}'
 			self.label2.Label = str(mt5.terminal_info())
+			logger.info(f'MT5 version: {mt5.version()}. Terminal info: {mt5.terminal_info()}')
 
 	def on_shoInTable_btn_press(self, event):
 		reader.createHTMLTable()
@@ -66,6 +82,50 @@ class MainFrame(wx.Frame):
 				self.tts.speak(f"{reader.char} {reader.timeFrame}")
 			else:
 				self.tts.speak("Currently there is no any chart data loaded.")
+		# Go to first bar
+		elif keyCode == ord('Q') and event.ControlDown() and event.ShiftDown(): reader.playFirstBar()
+		# Go to last bar
+		elif keyCode == ord('E') and event.ControlDown() and event.ShiftDown(): reader.playLastBar()
+		# Go 5 bars back
+		elif keyCode == ord('Q') and event.ShiftDown(): reader.goXBarsBack(5)()
+		# Go 5 bars forward
+		elif keyCode == ord('E') and event.ShiftDown(): reader.goXBarsForward(5)
+		# Go 12 bars back
+		elif keyCode == ord('Q') and event.ControlDown(): reader.goXBarsBack(12)
+		# Go 12 bars forward
+		elif keyCode == ord('E') and event.ControlDown(): reader.goXBarsForward(12)
+		# Previous bar
+		elif keyCode == ord('Q'): reader.playPreviousBar()
+		# Next bar
+		elif keyCode == ord('E'): reader.playNextBar()
+		# Say open price
+		elif keyCode == ord('A'): self.tts.speak(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
+		# Say close price
+		elif keyCode == ord('D'): self.tts.speak(str(reader.getCurrentBarInfo(reader.CLOSE_COLUMN)))
+		# Say low
+		elif keyCode == ord('S'): self.tts.speak(str(reader.getCurrentBarInfo(reader.LOW_COLUMN)))
+		# Say high
+		elif keyCode == ord('W'): self.tts.speak(str(reader.getCurrentBarInfo(reader.HIGH_COLUMN)))
+		# Say date
+		elif keyCode == ord('F'): self.tts.speak(str(datetime.utcfromtimestamp(reader.getCurrentBarInfo(reader.TIME_COLUMN))))
+		# Say volume
+		elif keyCode == ord('V'): self.tts.speak(str(reader.getCurrentBarInfo(reader.TICK_VOLUME_COLUMN)))
+		# Say current price
+		elif keyCode == ord('C'): self.tts.speak(str(reader.getCurrentPrice()))
+		# Play preview
+		elif keyCode == ord('P'): reader.playPreview()
 		# Let event go...
 		else:
 			event.Skip()
+
+	def on_playHighLowCheckbox_press(self, event):
+		if self.play_highlow_checkbox.GetValue():
+			reader.play_high_low = True
+		else:
+			reader.play_high_low = False
+
+	def on_barCountTextCtrl_change(self, event):
+		try:
+			reader.number_of_bars_to_recieve = int(self.barsCount_textCtrl.GetValue())
+		except:
+			logger.warn('Invalid user entry in bars count text control.')
