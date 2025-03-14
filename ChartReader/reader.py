@@ -3,16 +3,35 @@ import MetaTrader5 as mt5
 from datetime import datetime
 import pandas as pd
 import webbrowser
+import math
+import winsound
+import time
+import threading
+import wx
 
 
 logger = logging.getLogger(__name__)
 
+# Globals
 symbol = ""
 timeFrame = ""
 dataSet = []
+currentBar = 0
+lastBar = 0
+maxPrice = 0
+minPrice = 0
+
+sound_isPlaying = False
+soundThread = None
 
 # Settings
-NUMBER_OF_BARS_TO_RECIEVE = 200
+number_of_bars_to_recieve = 100
+play_high_low = False
+
+# Constants
+SOUND_MIN_FREQ = 120
+SOUND_MAX_FREQ = 5000
+SOUND_LENGTH = 150
 
 # Table colums names
 TIME_COLUMN = 'time'
@@ -48,6 +67,11 @@ def getMt5TimeFrame(timeFrame):
 	if timeFrame == "Monthly": return mt5.TIMEFRAME_MN1
 	return None
 
+def priceToHerz(price):
+	global maxPrice, minPrice
+	freq = SOUND_MIN_FREQ + (price - minPrice) * (SOUND_MAX_FREQ - SOUND_MIN_FREQ) / (maxPrice - minPrice)
+	return int(freq)
+
 def createHTMLTable():
 	dataFrame = pd.DataFrame(dataSet)
 	dataFrame[TIME_COLUMN] = pd.to_datetime(dataFrame[TIME_COLUMN], unit='s')
@@ -60,9 +84,111 @@ def createHTMLTable():
 		f.write(html)
 		webbrowser.open(file_path)
 
+def playSoundSequence():
+	global sound_isPlaying
+	if not sound_isPlaying: return
+	winsound.Beep(priceToHerz(getCurrentBarInfo(OPEN_COLUMN)), SOUND_LENGTH)
+	if not sound_isPlaying: return
+	winsound.Beep(priceToHerz(getCurrentBarInfo(CLOSE_COLUMN)), SOUND_LENGTH)
+	if not sound_isPlaying: return
+	time.sleep(0.24)
+	if play_high_low:
+		if getCurrentBarInfo(OPEN_COLUMN) <= getCurrentBarInfo(CLOSE_COLUMN):
+			if not sound_isPlaying: return
+			winsound.Beep(priceToHerz(getCurrentBarInfo(LOW_COLUMN)), SOUND_LENGTH)
+			if not sound_isPlaying: return
+			winsound.Beep(priceToHerz(getCurrentBarInfo(HIGH_COLUMN)), SOUND_LENGTH)
+		else:
+			if not sound_isPlaying: return
+			winsound.Beep(priceToHerz(getCurrentBarInfo(HIGH_COLUMN)), SOUND_LENGTH)
+			if not sound_isPlaying: return
+			winsound.Beep(priceToHerz(getCurrentBarInfo(LOW_COLUMN)), SOUND_LENGTH)
+	sound_isPlaying = False
+
+def playPreviewSequence():
+	global sound_isPlaying, lastBar, dataSet
+	i = 0
+	while sound_isPlaying and i <= lastBar:
+		winsound.Beep(priceToHerz(dataSet[i][CLOSE_COLUMN]), 100)
+		i += 1
+	sound_isPlaying = False
+
+def playPreview():
+	global sound_isPlaying, soundThread
+	if sound_isPlaying:
+		sound_isPlaying = False
+		soundThread.join()
+	soundThread = threading.Thread(target=playPreviewSequence)
+	sound_isPlaying = True
+	soundThread.start()
+
+def playBar():
+	global sound_isPlaying, soundThread
+	if sound_isPlaying:
+		sound_isPlaying = False
+		soundThread.join()
+	sound_isPlaying = True
+	soundThread = threading.Thread(target=playSoundSequence)
+	soundThread.start()
+
+def playPreviousBar():
+	global currentBar
+	if currentBar == 0: return
+	currentBar -= 1
+	playBar()
+
+def playNextBar():
+	global currentBar
+	if currentBar == lastBar: return
+	currentBar += 1
+	playBar()
+
+def playFirstBar():
+	global currentBar
+	currentBar = 0
+	playBar()
+
+def playLastBar():
+	global currentBar, lastBar
+	currentBar = lastBar
+	playBar()
+
+def goXBarsBack(x):
+	global currentBar
+	if x >= currentBar: currentBar = 0
+	else: currentBar -= x
+	playBar()
+
+def goXBarsForward(x):
+	global currentBar, lastBar
+	if currentBar + x >= lastBar: currentBar = lastBar
+	else: currentBar += x
+	playBar()
+
+def getCurrentBarInfo(infoType):
+	return dataSet[currentBar][infoType]
+
+def getCurrentPrice():
+	return mt5.copy_rates_from_pos(symbol, getMt5TimeFrame(timeFrame), 0, 1)[0][CLOSE_COLUMN]
+
 # Callback for server
 def recieve_data(serverMessage):
-	global symbol, timeFrame, dataSet
-	symbol, timeFrame = serverMessage[1:-1].split(",")
-	dataSet = mt5.copy_rates_from_pos(symbol, getMt5TimeFrame(timeFrame), 0, NUMBER_OF_BARS_TO_RECIEVE)
-	print(dataSet)
+	global symbol, timeFrame, dataSet, currentBar, lastBar, maxPrice, minPrice
+	try:
+		logger.info(f'Parsing server message {serverMessage}')
+		symbol, timeFrame = serverMessage[1:-1].split(",")
+		logger.info(f'Parse result. Symbol: {symbol}. Timeframe: {timeFrame}')
+		logger.info('Getting data from MT5...')
+		dataSet = mt5.copy_rates_from_pos(symbol, getMt5TimeFrame(timeFrame), 0, number_of_bars_to_recieve)
+		lastBar = len(dataSet) - 1
+		currentBar = lastBar
+		maxPrice = 0
+		minPrice = math.inf
+		for data in dataSet:
+			if data[HIGH_COLUMN] > maxPrice: maxPrice = data[HIGH_COLUMN]
+			if data[LOW_COLUMN] < minPrice: minPrice = data[LOW_COLUMN]
+		logger.info(f'Last bar index: {lastBar}. Min price: {minPrice}. Max price: {maxPrice}')
+		playBar()
+	except Exception as e:
+		logger.error('Unexpected error. ', exc_info=True)
+		wx.MessageBox('Unexpected error. Please refer to logs.', 'Error', wx.OK | wx.ICON_ERROR)
