@@ -79,6 +79,11 @@ To navigate forward and backward, as well as to hear the numerical price values,
 - **V** – Announce the volume.
 - **C** – Announce the current price.
 
+#### Ruler
+
+- **Ctrl + S/W/A/D** – Set ruler start marker. If set, announces price difference and bar count.
+
 #### Other Functions
 
 - **P** – Play preview.
+- **R** – Say last output

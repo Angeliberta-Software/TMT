@@ -4,6 +4,7 @@ import logging
 import reader
 import accessible_output2.outputs
 from datetime import datetime
+import instruments
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +57,8 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
 
 		self.tts = accessible_output2.outputs.auto.Auto()
+		self.ruler = instruments.Ruler()
+		self.lastOutput = ''
 
 		self.Show()
 
@@ -98,20 +101,30 @@ class MainFrame(wx.Frame):
 		elif keyCode == ord('Q'): reader.playPreviousBar()
 		# Next bar
 		elif keyCode == ord('E'): reader.playNextBar()
+		# Use ruler
+		elif keyCode == ord('A') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.OPEN_COLUMN), reader.currentBar)
+		# Use ruler
+		elif keyCode == ord('D') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.CLOSE_COLUMN), reader.currentBar)
+		# Use ruler
+		elif keyCode == ord('S') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.currentBar)
+		# Use ruler
+		elif keyCode == ord('W') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.HIGH_COLUMN), reader.currentBar)
 		# Say open price
-		elif keyCode == ord('A'): self.tts.speak(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
+		elif keyCode == ord('A'): self.speak(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
 		# Say close price
-		elif keyCode == ord('D'): self.tts.speak(str(reader.getCurrentBarInfo(reader.CLOSE_COLUMN)))
+		elif keyCode == ord('D'): self.speak(str(reader.getCurrentBarInfo(reader.CLOSE_COLUMN)))
 		# Say low
-		elif keyCode == ord('S'): self.tts.speak(str(reader.getCurrentBarInfo(reader.LOW_COLUMN)))
+		elif keyCode == ord('S'): self.speak(str(reader.getCurrentBarInfo(reader.LOW_COLUMN)))
 		# Say high
-		elif keyCode == ord('W'): self.tts.speak(str(reader.getCurrentBarInfo(reader.HIGH_COLUMN)))
+		elif keyCode == ord('W'): self.speak(str(reader.getCurrentBarInfo(reader.HIGH_COLUMN)))
 		# Say date
-		elif keyCode == ord('F'): self.tts.speak(str(datetime.utcfromtimestamp(reader.getCurrentBarInfo(reader.TIME_COLUMN))))
+		elif keyCode == ord('F'): self.speak(str(datetime.utcfromtimestamp(reader.getCurrentBarInfo(reader.TIME_COLUMN))))
 		# Say volume
-		elif keyCode == ord('V'): self.tts.speak(str(reader.getCurrentBarInfo(reader.TICK_VOLUME_COLUMN)))
+		elif keyCode == ord('V'): self.speak(str(reader.getCurrentBarInfo(reader.TICK_VOLUME_COLUMN)))
 		# Say current price
-		elif keyCode == ord('C'): self.tts.speak(str(reader.getCurrentPrice()))
+		elif keyCode == ord('C'): self.speak(str(reader.getCurrentPrice()))
+		# Say last output
+		elif keyCode == ord('R'): self.tts.speak(self.lastOutput)
 		# Play preview
 		elif keyCode == ord('P'): reader.playPreview()
 		# Let event go...
@@ -129,3 +142,15 @@ class MainFrame(wx.Frame):
 			reader.number_of_bars_to_recieve = int(self.barsCount_textCtrl.GetValue())
 		except:
 			logger.warn('Invalid user entry in bars count text control.')
+
+	def processRuler(self, price, barIndex):
+		if not self.ruler.activated:
+			self.ruler.activate(price, barIndex)
+			self.speak('Ruler start marker set.')
+		else:
+			priceDifference, barDifference = self.ruler.calculate(price, barIndex)
+			self.speak(f'{str(priceDifference)}, {str(barDifference)}')
+
+	def speak(self, string):
+		self.tts.speak(string)
+		self.lastOutput = string
