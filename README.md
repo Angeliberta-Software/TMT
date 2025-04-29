@@ -83,6 +83,13 @@ To navigate forward and backward, as well as to hear the numerical price values,
 
 - **Ctrl + S/W/A/D** – Set ruler start marker. If set, announces price difference and bar count.
 
+#### Markers
+
+- **M** – Place a marker
+- **Shift + M** – Remove a marker
+- **]** – Next marker
+- **[** – Previous marker
+
 #### Other Functions
 
 - **P** – Play preview.
