@@ -166,3 +166,4 @@ cython_debug/
 .vs/
 .nvdasource/
 ChartReader/chart.html
+ChartReader/*_*.json

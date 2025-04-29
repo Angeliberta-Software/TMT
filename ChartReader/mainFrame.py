@@ -127,6 +127,19 @@ class MainFrame(wx.Frame):
 		elif keyCode == ord('R'): self.tts.speak(self.lastOutput)
 		# Play preview
 		elif keyCode == ord('P'): reader.playPreview()
+		# Delete a marker
+		elif keyCode == ord('M') and event.ShiftDown():
+			result = instruments.deleteMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
+			if result: self.speak('Marker deleted.')
+			else: self.speak('No marker selected.')
+		# Plase a marker
+		elif keyCode == ord('M'):
+			instruments.addMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
+			self.speak('Marker set')
+		# Go to next marker
+		elif keyCode == ord(']'): self.processMarkers(1)
+		# Go to previous marker
+		elif keyCode == ord('['): self.processMarkers(-1)
 		# Let event go...
 		else:
 			event.Skip()
@@ -154,3 +167,12 @@ class MainFrame(wx.Frame):
 	def speak(self, string):
 		self.tts.speak(string)
 		self.lastOutput = string
+
+	def processMarkers(self, direction):
+		date = 0
+		if direction == 1: date = instruments.nextMarker()
+		if direction == -1: date = instruments.previousMarker()
+		if not date == 0:
+			for i in range(0, len(reader.dataSet)):
+				if reader.dataSet[i][reader.TIME_COLUMN] == date:
+					reader.goToBarById(i)

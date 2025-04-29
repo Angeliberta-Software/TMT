@@ -8,6 +8,7 @@ import winsound
 import time
 import threading
 import wx
+import instruments
 
 
 logger = logging.getLogger(__name__)
@@ -165,6 +166,12 @@ def goXBarsForward(x):
 	else: currentBar += x
 	playBar()
 
+def goToBarById(id):
+	global currentBar, lastBar
+	if id >= 0 and id <= lastBar:
+		currentBar = id
+		playBar()
+
 def getCurrentBarInfo(infoType):
 	return dataSet[currentBar][infoType]
 
@@ -188,6 +195,7 @@ def recieve_data(serverMessage):
 			if data[HIGH_COLUMN] > maxPrice: maxPrice = data[HIGH_COLUMN]
 			if data[LOW_COLUMN] < minPrice: minPrice = data[LOW_COLUMN]
 		logger.info(f'Last bar index: {lastBar}. Min price: {minPrice}. Max price: {maxPrice}')
+		instruments.initialize(symbol, timeFrame )
 		playBar()
 	except Exception as e:
 		logger.error('Unexpected error. ', exc_info=True)

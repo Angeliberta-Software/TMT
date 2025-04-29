@@ -3,3 +3,4 @@ wxPython
 pyinstaller
 accessible-output2
 pandas
+pydantic
