@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List
 import json
 import os
+import math
 
 
 class Ruler:
@@ -36,6 +37,7 @@ class Ruler:
 
 class Storage(BaseModel):
 	markers: List[int]
+	levels : List[float]
 
 
 logger = logging.getLogger(__name__)
@@ -43,9 +45,10 @@ logger = logging.getLogger(__name__)
 storage = None
 fileName = ''
 currentMarker = 0
+currentLevel = 0
 
 def initialize(symbol, timeframe):
-	global fileName, storage, currentMarker
+	global fileName, storage, currentMarker, currentLevel
 	logger.info('Initializing instruments...')
 	fileName = f'{symbol}_{timeframe}.json'
 	logger.info(f'File to use: {fileName}')
@@ -56,8 +59,9 @@ def initialize(symbol, timeframe):
 			storage = Storage.model_validate_json(jsonData)
 	else:
 		logger.info('File does not exists, creating new object...')
-		storage = Storage(markers=[])
+		storage = Storage(markers=[], levels=[])
 	currentMarker = 0
+	currentLevel = 0
 
 def updateFile():
 	global storage, fileName
@@ -74,9 +78,10 @@ def addMarker(date):
 	updateFile()
 
 def deleteMarker(date):
-	global storage
+	global storage, currentMarker
 	if date in storage.markers:
 		storage.markers.remove(date)
+		currentMarker = 0
 		updateFile()
 		return True
 	else:
@@ -96,3 +101,53 @@ def previousMarker():
 		return storage.markers[currentMarker]
 	return 0
 
+def addLevel(price):
+	global storage
+	storage.levels.append(price)
+	storage.levels.sort()
+	updateFile()
+
+def deleteLevel():
+	global storage, currentLevel
+	if len(storage.levels) < 1: return False
+	if currentLevel >= 0 and currentLevel < len(storage.levels):
+		storage.levels.pop(currentLevel)
+		currentLevel = 0
+		updateFile()
+		return True
+	else:
+		return False
+
+def nextLevel():
+	global currentLevel, storage
+	if not len(storage.levels) < 1:
+		if not currentLevel>= len(storage.levels) - 1:currentLevel+= 1
+		return storage.levels[currentLevel]
+	return 0
+
+def previousLevel():
+	global currentLevel, storage
+	if not len(storage.levels) < 1:
+		if not currentLevel<= 0: currentLevel-= 1
+		return storage.levels[currentLevel]
+	return 0
+
+def getClosestLevel(currentPrice):
+	global storage
+	if len(storage.levels) < 1: return 0
+	closestPrice = 0
+	minDistance = math.inf
+	for price in storage.levels:
+		distance = abs(currentPrice - price)
+		if distance < minDistance:
+			minDistance = distance
+			closestPrice = price
+	return closestPrice
+
+def getCrossingLevel(low, high):
+	global storage
+	if len(storage.levels) < 1: return 0
+	for level in storage.levels:
+		if level >= low and level <= high:
+			return level
+	return 0
