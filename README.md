@@ -90,6 +90,14 @@ To navigate forward and backward, as well as to hear the numerical price values,
 - **]** – Next marker
 - **[** – Previous marker
 
+#### Levels
+
+- **Shift + S/W/A/D** – Set level
+- **Shift + L** – Remove selected level
+- **T** – Next level
+- **G** – Previous level
+- **L** – Closest level to current price
+
 #### Other Functions
 
 - **P** – Play preview.

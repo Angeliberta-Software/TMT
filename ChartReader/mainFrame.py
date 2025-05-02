@@ -98,9 +98,15 @@ class MainFrame(wx.Frame):
 		# Go 12 bars forward
 		elif keyCode == ord('E') and event.ControlDown(): reader.goXBarsForward(12)
 		# Previous bar
-		elif keyCode == ord('Q'): reader.playPreviousBar()
+		elif keyCode == ord('Q'):
+			reader.playPreviousBar()
+			crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+			if not crossingLevel == 0: self.speak(f'Crossing level {crossingLevel}')
 		# Next bar
-		elif keyCode == ord('E'): reader.playNextBar()
+		elif keyCode == ord('E'):
+			reader.playNextBar()
+			crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+			if not crossingLevel == 0: self.speak(f'Crossing level {crossingLevel}')
 		# Use ruler
 		elif keyCode == ord('A') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.OPEN_COLUMN), reader.currentBar)
 		# Use ruler
@@ -109,6 +115,39 @@ class MainFrame(wx.Frame):
 		elif keyCode == ord('S') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.currentBar)
 		# Use ruler
 		elif keyCode == ord('W') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.HIGH_COLUMN), reader.currentBar)
+		# Add level
+		elif keyCode == ord('S') and event.ShiftDown():
+			price = reader.getCurrentBarInfo(reader.LOW_COLUMN)
+			instruments.addLevel(price)
+			self.speak(f'Added level: {price}')
+		# Add level
+		elif keyCode == ord('W') and event.ShiftDown():
+			price = reader.getCurrentBarInfo(reader.HIGH_COLUMN)
+			instruments.addLevel(price)
+			self.speak(f'Added level: {price}')
+		# Add level
+		elif keyCode == ord('A') and event.ShiftDown():
+			price = reader.getCurrentBarInfo(reader.OPEN_COLUMN)
+			instruments.addLevel(price)
+			self.speak(f'Added level: {price}')
+		# Add level
+		elif keyCode == ord('D') and event.ShiftDown():
+			price = reader.getCurrentBarInfo(reader.CLOSE_COLUMN)
+			instruments.addLevel(price)
+			self.speak(f'Added level: {price}')
+		# Delete level
+		elif keyCode == ord('L') and event.ShiftDown():
+			if instruments.deleteLevel() == True: self.speak('Level deleted.')
+			else: self.speak('No levels.')
+		# Next level
+		elif keyCode == ord('T'): self.processLevels(1)
+		# Previous level
+		elif keyCode == ord('G'): self.processLevels(-1)
+		# Closest level
+		elif keyCode == ord('L'):
+			closestLevel = instruments.getClosestLevel(reader.getCurrentPrice())
+			if not closestLevel == 0: self.speak(str(closestLevel))
+			else: self.speak('No levels')
 		# Say open price
 		elif keyCode == ord('A'): self.speak(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
 		# Say close price
@@ -176,3 +215,10 @@ class MainFrame(wx.Frame):
 			for i in range(0, len(reader.dataSet)):
 				if reader.dataSet[i][reader.TIME_COLUMN] == date:
 					reader.goToBarById(i)
+
+	def  processLevels(self, direction):
+		price = 0
+		if direction == 1: price = instruments.nextLevel()
+		if direction == -1: price = instruments.previousLevel()
+		if not price == 0: self.speak(str(price))
+		else: self.speak('No levels.')
