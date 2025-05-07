@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../style.css" media="screen">
+<title>Talking Meta Trader</title>
+</head>
+<body>
+<h1>TMT - Talking Meta Trader</h1>
+<p>An NVDA plugin for Meta Trader 5</p>
+<p>Allows to navigate in Meta Trader 5 using hot keys.</p>
+<p>This addon comes with a standalone application called ChartReader.ChartReader can read chart data from MetaTrader and convert it into an HTML table or represent it as sound tones, helping blind users understand trends, levels, and figures.</p>
+<h2>Requirements</h2>
+<p>Meta Trader 5 x64</p>
+<h2>Basic Navigation</h2>
+<h3>Focus</h3>
+<ul>
+<li>Control+1: toolbox window.</li>
+<li>Control+Shift+1: Focus on the toolbox tab list. Currently it uses OCR to retrieve tab names. After OCR use up and down arrows to select the tab you need.</li>
+<li>Control+2: data window.</li>
+<li>Control+3: navigator window.</li>
+<li>Control+4: market watch window.</li>
+<li>Control+5: workspace.</li>
+</ul>
+<p>Appropriate checkboxes should be checked in the View menu and all panels should be visible.</p>
+<h3>Announce</h3>
+<ul>
+<li>Control+P: current profile.</li>
+<li>Control+0: terminal current time.</li>
+<li>NVDA+T: announces an active chart instrument instead of long account number and company name.</li>
+</ul>
+<h2>Chart Reader</h2>
+<p>This addon comes with a standalone application called ChartReader.</p>
+<p>ChartReader can read chart data from MetaTrader and convert it into an HTML table or represent it as sound tones, helping blind users understand trends, levels, and figures.</p>
+<p>To start, run ChartReader.exe located in the addon's folder. If you see a Windows security warning, you can safely ignore it. You may also create a desktop shortcut for quicker access in the future.</p>
+<p>Click the "Initialize MetaTrader" button. This will also launch the MetaTrader application if it is not already running.</p>
+<p>In MetaTrader, press Control + Shift + 0. You should hear a couple of beeps.</p>
+<p>Now, in ChartReader, you can either click the "Show in table" button to view the data in table format or use the "Q" and "E" keys to hear bars as sound tones.</p>
+<p>As soon as ChartReader receives data from MetaTrader, it will play the most recent bar from the chart (today's bar if the chart is set to daily). Use "Q" to move left (backward) and "E" to move right (forward).</p>
+<p>Each time you move from bar to bar, you will hear two tones:
+* The first tone represents the open price.
+* The second tone represents the close price.</p>
+<p>If you check the "Play high/low" checkbox, you will hear four tones instead:
+* For a bear bar (closing price lower than opening price): open, close, high, and low.
+* For a bull bar (closing price higher than opening price): open, close, low, and high.</p>
+<p>To navigate forward and backward, as well as to hear the numerical price values, use the following key combinations:</p>
+<h3>Keyboard Shortcuts for ChartReader</h3>
+<h4>Navigation</h4>
+<ul>
+<li><strong>Ctrl + Shift + I</strong> – Announce current chart and time frame.</li>
+<li><strong>Ctrl + Shift + Q</strong> – Go to the first bar.</li>
+<li><strong>Ctrl + Shift + E</strong> – Go to the last bar.</li>
+<li><strong>Shift + Q</strong> – Move 5 bars back.</li>
+<li><strong>Shift + E</strong> – Move 5 bars forward.</li>
+<li><strong>Ctrl + Q</strong> – Move 12 bars back.</li>
+<li><strong>Ctrl + E</strong> – Move 12 bars forward.</li>
+<li><strong>Q</strong> – Go to the previous bar.</li>
+<li><strong>E</strong> – Go to the next bar.</li>
+</ul>
+<h4>Price Information</h4>
+<ul>
+<li><strong>A</strong> – Announce the open price.</li>
+<li><strong>D</strong> – Announce the close price.</li>
+<li><strong>S</strong> – Announce the low price.</li>
+<li><strong>W</strong> – Announce the high price.</li>
+<li><strong>F</strong> – Announce the date.</li>
+<li><strong>V</strong> – Announce the volume.</li>
+<li><strong>C</strong> – Announce the current price.</li>
+</ul>
+<h4>Ruler</h4>
+<ul>
+<li><strong>Ctrl + S/W/A/D</strong> – Set ruler start marker. If set, announces price difference and bar count.</li>
+</ul>
+<h4>Markers</h4>
+<ul>
+<li><strong>M</strong> – Place a marker</li>
+<li><strong>Shift + M</strong> – Remove a marker</li>
+<li><strong>]</strong> – Next marker</li>
+<li><strong>[</strong> – Previous marker</li>
+</ul>
+<h4>Levels</h4>
+<ul>
+<li><strong>Shift + S/W/A/D</strong> – Set level</li>
+<li><strong>Shift + L</strong> – Remove selected level</li>
+<li><strong>T</strong> – Next level</li>
+<li><strong>G</strong> – Previous level</li>
+<li><strong>L</strong> – Closest level to current price</li>
+</ul>
+<h4>Other Functions</h4>
+<ul>
+<li><strong>P</strong> – Play preview.</li>
+<li><strong>R</strong> – Say last output</li>
+</ul>
+</body>
+</html>

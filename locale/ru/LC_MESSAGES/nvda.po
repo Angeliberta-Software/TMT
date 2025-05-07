@@ -1,0 +1,69 @@
+# TMT addon translation
+# Copyright (C) 2025 Angeliberta Software
+# This file is distributed under the same license as the talkingMetaTrader package.
+# FIRST AUTHOR <vladimirsuhorukov@gmail.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-06 20:03+0300\n"
+"PO-Revision-Date: 2025-05-07 09:47+0300\n"
+"Last-Translator: Vladimir Suhhorukov <vladimirsuhorukov@gmail.com>\n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.6\n"
+
+#. Translators: Error when the addon failed to send a message to ChartReader.
+#: .\__init__.py:52 .\__init__.py:57
+msgid "Failed to connect to chart reader"
+msgstr "Возникла проблема при подключении к ChartReader"
+
+#. Translators: Gesture description.
+#: .\__init__.py:61
+msgid "Announce current profile"
+msgstr "Озвучить текущий профиль"
+
+#. Translators: Gesture description.
+#: .\__init__.py:73
+msgid "Focus on toolbox window"
+msgstr "Фокус на окне инструментов"
+
+#. Translators: Gesture description.
+#: .\__init__.py:81
+msgid "Focus on data window"
+msgstr "Фокус на окне данных"
+
+#. Translators: Gesture description.
+#: .\__init__.py:89
+msgid "Focus on navigator window"
+msgstr "Фокус на окне навигатора"
+
+#. Translators: Gesture description.
+#: .\__init__.py:97
+msgid "Focus on market watch window"
+msgstr "Фокус на окне market watch"
+
+#. Translators: Gesture description.
+#: .\__init__.py:105
+msgid "Focus on Workspace"
+msgstr "Фокус на рабочей области"
+
+#. Translators: Gesture description.
+#: .\__init__.py:113
+msgid "Announce terminal time"
+msgstr "Озвучить время терминала"
+
+#. Translators: Gesture description.
+#: .\__init__.py:122
+msgid "Show toolbox tabs."
+msgstr "Показать вкладки окна инструментов"
+
+#. Translators: Gesture description.
+#: .\__init__.py:141
+msgid "Send symbol and timeframe info to chart reader app"
+msgstr "Послать символ и таймфрейм в ChartReader"
