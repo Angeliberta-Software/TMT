@@ -5,13 +5,14 @@ import reader
 import accessible_output2.outputs
 from datetime import datetime
 import instruments
+import webbrowser
 
 
 logger = logging.getLogger(__name__)
 
 class MainFrame(wx.Frame):
 	def __init__(self):
-		super().__init__(parent=None, title="TMT")
+		super().__init__(parent=None, title="Chart Reader")
 		main_sizer = wx.BoxSizer(wx.VERTICAL)
 
 		self.ctrlpanel = wx.Panel(self)
@@ -37,8 +38,13 @@ class MainFrame(wx.Frame):
 		self.barsCount_textCtrl = wx.TextCtrl(self.ctrlpanel, size=(200, -1))
 		self.barsCount_textCtrl.Value = str(reader.number_of_bars_to_recieve)
 		self.barsCount_textCtrl.Bind(wx.EVT_TEXT, self.on_barCountTextCtrl_change)
-		ctrlpanel_sizer.Add(self.barsCount_textCtrl, 0, wx.ALL | wx.CENTER, 5)
 		ctrlpanel_sizer.Add(barsCountLabel, 0, wx.ALL | wx.CENTER, 5)
+		ctrlpanel_sizer.Add(self.barsCount_textCtrl, 0, wx.ALL | wx.CENTER, 5)
+
+		self.donate_btn = wx.Button(self.ctrlpanel, label="Donate...")
+		ctrlpanel_sizer.Add(self.donate_btn, 0, wx.ALL | wx.CENTER, 5)
+		self.donate_btn.Bind(wx.EVT_BUTTON, self.on_donate_btn_press)
+		self.donate_btn.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
 
 		self.ctrlpanel.SetSizer(ctrlpanel_sizer)
 		main_sizer.Add(self.ctrlpanel, 0, wx.ALL, 5)
@@ -60,6 +66,7 @@ class MainFrame(wx.Frame):
 		self.ruler = instruments.Ruler()
 		self.lastOutput = ''
 
+		self.Fit()
 		self.Show()
 
 	def on_initialize_btn_press(self, event):
@@ -222,3 +229,6 @@ class MainFrame(wx.Frame):
 		if direction == -1: price = instruments.previousLevel()
 		if not price == 0: self.speak(str(price))
 		else: self.speak('No levels.')
+
+	def on_donate_btn_press(self, event):
+		webbrowser.open("https://www.paypal.me/vladimirsuhhorukov")
