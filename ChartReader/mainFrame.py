@@ -1,4 +1,3 @@
-from math import log
 import MetaTrader5 as mt5
 import wx
 import logging
