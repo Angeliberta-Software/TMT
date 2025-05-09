@@ -1,3 +1,4 @@
+from math import log
 import MetaTrader5 as mt5
 import wx
 import logging
@@ -88,10 +89,10 @@ class MainFrame(wx.Frame):
 
 		# Chart info
 		if keyCode == ord('I') and event.ControlDown():
-			if not reader.char == "" or not reader.timeFrame == "":
-				self.tts.speak(f"{reader.char} {reader.timeFrame}")
+			if not reader.symbol == "" or not reader.timeFrame== "":
+				self.speak(f"{reader.symbol} {reader.timeFrame}")
 			else:
-				self.tts.speak("Currently there is no any chart data loaded.")
+				self.speak("Currently there is no any chart data loaded.")
 		# Go to first bar
 		elif keyCode == ord('Q') and event.ControlDown() and event.ShiftDown(): reader.playFirstBar()
 		# Go to last bar
