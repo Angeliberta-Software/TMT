@@ -34,6 +34,11 @@ class MainFrame(wx.Frame):
 		self.play_highlow_checkbox.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
 		ctrlpanel_sizer.Add(self.play_highlow_checkbox, 0, wx.ALL | wx.CENTER, 5)
 
+		self.announceCrossingLevels_checkbox = wx.CheckBox(self.ctrlpanel, label='Announce crossing levels')
+		self.announceCrossingLevels_checkbox.SetValue(False)
+		self.announceCrossingLevels_checkbox.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
+		ctrlpanel_sizer.Add(self.announceCrossingLevels_checkbox, 0, wx.ALL | wx.CENTER, 5)
+
 		barsCountLabel = wx.StaticText(self.ctrlpanel, label='Bars count: ')
 		self.barsCount_textCtrl = wx.TextCtrl(self.ctrlpanel, size=(200, -1))
 		self.barsCount_textCtrl.Value = str(reader.number_of_bars_to_recieve)
@@ -108,12 +113,12 @@ class MainFrame(wx.Frame):
 		elif keyCode == ord('Q'):
 			reader.playPreviousBar()
 			crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
-			if not crossingLevel == 0: self.speak(f'Crossing level {crossingLevel}')
+			if not crossingLevel == 0 and self.announceCrossingLevels_checkbox.GetValue(): self.speak(f'Crossing level {crossingLevel}')
 		# Next bar
 		elif keyCode == ord('E'):
 			reader.playNextBar()
 			crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
-			if not crossingLevel == 0: self.speak(f'Crossing level {crossingLevel}')
+			if not crossingLevel == 0 and self.announceCrossingLevels_checkbox.GetValue(): self.speak(f'Crossing level {crossingLevel}')
 		# Use ruler
 		elif keyCode == ord('A') and event.ControlDown(): self.processRuler(reader.getCurrentBarInfo(reader.OPEN_COLUMN), reader.currentBar)
 		# Use ruler
