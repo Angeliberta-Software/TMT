@@ -102,3 +102,6 @@ To navigate forward and backward, as well as to hear the numerical price values,
 
 - **P** – Play preview.
 - **R** – Say last output
+
+## **Disclaimer**
+By using this add-on and the accompanying software, the user assumes full responsibility and fully accepts all possible risks associated with the use of this software. The authors of the software bear no liability for any potential financial losses or any other harm caused by decisions made based on information obtained through the use of this software. The user uses this software entirely at their own risk and under their sole responsibility.
