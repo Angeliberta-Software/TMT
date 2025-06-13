@@ -8,9 +8,6 @@ import socket
 from _thread import start_new_thread
 import appModuleHandler
 import api
-import contentRecog
-import contentRecog.recogUi
-import contentRecog.uwpOcr
 from scriptHandler import script
 from logHandler import log
 from ui import message
@@ -29,7 +26,7 @@ class AppModule(appModuleHandler.AppModule):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.ocrRequested = False
+		pass
 
 	def getElements(self):
 		return api.getForegroundObject().children
@@ -60,10 +57,7 @@ class AppModule(appModuleHandler.AppModule):
 	# Translators: Gesture description.
 	@script(description=_("Announce current profile"), gesture="kb:control+p", category=GESTURE_CATEGORY_NAME)
 	def script_announceCurrentProfile(self, gesture):
-		for o in self.getElements():
-			if o.role == role.Role.STATUSBAR:
-				message(o.children[1].name)
-				break
+		message(self.getElements()[10].children[0].children[1].name)
 
 	@script(gesture="kb:nvda+t")
 	def script_fixWindowTitle(self, gesture):
@@ -74,32 +68,23 @@ class AppModule(appModuleHandler.AppModule):
 	def script_focusOnToolboxWindow(self, gesture):
 		for obj in self.getElements():
 			if obj.name == "Toolbox":
-				obj.children[0].children[2].setFocus()
+				obj.children[2].setFocus()
 				break
 
 	# Translators: Gesture description.
 	@script(description=_("Focus on data window"), gesture="kb:control+2", category=GESTURE_CATEGORY_NAME)
 	def script_focusOnDataWindow(self, gesture):
-		for obj in self.getElements():
-			if obj.name == "Navigator":
-				obj.children[0].children[0].setFocus()
-				break
+		self.getElements()[1].setFocus()
 
 	# Translators: Gesture description.
 	@script(description=_("Focus on navigator window"), gesture="kb:control+3", category=GESTURE_CATEGORY_NAME)
 	def script_focusOnNavigatorWindow(self, gesture):
-		for obj in self.getElements():
-			if obj.name == "Navigator":
-				obj.children[1].children[1].setFocus()
-				break
+		self.getElements()[3].children[1].setFocus()
 
 	# Translators: Gesture description.
 	@script(description=_("Focus on market watch window"), gesture="kb:control+4", category=GESTURE_CATEGORY_NAME)
 	def script_focusOnMarketWatchWindow(self, gesture):
-		for obj in self.getElements():
-			if obj.name == "Navigator":
-				obj.children[2].children[0].setFocus()
-				break
+		self.getElements()[4].children[0].setFocus()
 
 	# Translators: Gesture description.
 	@script(description=_("Focus on Workspace"), gesture="kb:control+5", category=GESTURE_CATEGORY_NAME)
@@ -112,27 +97,19 @@ class AppModule(appModuleHandler.AppModule):
 	# Translators: Gesture description.
 	@script(description=_("Announce terminal time"), gesture="kb:control+0", category=GESTURE_CATEGORY_NAME)
 	def script_announceTerminalTime(self, gesture):
-		for obj in self.getElements():
-			if obj.name == "Navigator":
-				nameElements = obj.children[2].name.split(": ")
-				message(nameElements[1])
-				break
+		data = self.getElements()[4].name.split(':')
+		text = f"{data[1]}:{data[2]}:{data[3]}"
+		message(text)
 
 	# Translators: Gesture description.
 	@script(description=_("Show toolbox tabs."), gesture="kb:control+shift+1", category=GESTURE_CATEGORY_NAME)
 	def script_showToolboxTabs(self, gesture):
 		for obj in self.getElements():
 			if obj.name == "Toolbox":
-				self.ocrRequested = True
-				obj.children[0].children[0].setFocus()
+				obj.children[0].setFocus()
 				break
 
 	def event_gainFocus(self, obj, nextHandler):
-		if self.ocrRequested:
-			recognizor = contentRecog.uwpOcr.UwpOcr(None)
-			contentRecog.recogUi.recognizeNavigatorObject(recognizor)
-			self.ocrRequested = False
-			return
 		if obj.role == role.Role.PANE:
 			message(self.processTitle())
 		nextHandler()

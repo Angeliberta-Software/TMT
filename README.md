@@ -8,14 +8,14 @@ This addon comes with a standalone application called ChartReader.ChartReader ca
 
 ## Requirements
 
- Meta Trader 5 x64
+ Meta Trader 5 x64 version 5.00 build 5100 6 Jun 2025
  
 ## Basic Navigation
 
 ### Focus
 
 * Control+1: toolbox window.
-* Control+Shift+1: Focus on the toolbox tab list. Currently it uses OCR to retrieve tab names. After OCR use up and down arrows to select the tab you need.
+* Control+Shift+1: Focus on the toolbox tab list. After Focus use NVDA object navigation left and right to select a tab.
 * Control+2: data window.
 * Control+3: navigator window.
 * Control+4: market watch window.
