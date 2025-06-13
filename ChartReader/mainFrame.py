@@ -82,7 +82,7 @@ class MainFrame(wx.Frame):
 			mt5.shutdown()
 		else:
 			self.label1.Label = f'mt5 version: {mt5.version()}'
-			self.label2.Label = str(mt5.terminal_info())
+			self.label2.Label = 'Connected'
 			logger.info(f'MT5 version: {mt5.version()}. Terminal info: {mt5.terminal_info()}')
 
 	def on_shoInTable_btn_press(self, event):
@@ -102,7 +102,7 @@ class MainFrame(wx.Frame):
 		# Go to last bar
 		elif keyCode == ord('E') and event.ControlDown() and event.ShiftDown(): reader.playLastBar()
 		# Go 5 bars back
-		elif keyCode == ord('Q') and event.ShiftDown(): reader.goXBarsBack(5)()
+		elif keyCode == ord('Q') and event.ShiftDown(): reader.goXBarsBack(5)
 		# Go 5 bars forward
 		elif keyCode == ord('E') and event.ShiftDown(): reader.goXBarsForward(5)
 		# Go 12 bars back
@@ -195,6 +195,11 @@ class MainFrame(wx.Frame):
 		else:
 			event.Skip()
 
+		try:
+			self.updateInfoPanel()
+		except:
+			pass
+
 	def on_playHighLowCheckbox_press(self, event):
 		if self.play_highlow_checkbox.GetValue():
 			reader.play_high_low = True
@@ -237,3 +242,7 @@ class MainFrame(wx.Frame):
 
 	def on_donate_btn_press(self, event):
 		webbrowser.open("https://www.paypal.me/vladimirsuhhorukov")
+
+	def updateInfoPanel(self):
+		text = f"Current bar: {reader.currentBar}, Symbol: {reader.symbol}, Max price: {reader.maxPrice}, Min price: {reader.minPrice}"
+		self.label2.Label = text
