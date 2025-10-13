@@ -183,7 +183,7 @@ def recieve_data(serverMessage):
 	global symbol, timeFrame, dataSet, currentBar, lastBar, maxPrice, minPrice
 	try:
 		logger.info(f'Parsing server message {serverMessage}')
-		symbol, timeFrame = serverMessage[1:-1].split(",")
+		symbol, timeFrame = serverMessage.strip("[]").split(",")
 		logger.info(f'Parse result. Symbol: {symbol}. Timeframe: {timeFrame}')
 		logger.info('Getting data from MT5...')
 		dataSet = mt5.copy_rates_from_pos(symbol, getMt5TimeFrame(timeFrame), 0, number_of_bars_to_recieve)
