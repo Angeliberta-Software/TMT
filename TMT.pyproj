@@ -19,6 +19,8 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="appModules\terminal64\instruments.py" />
+    <Compile Include="appModules\terminal64\reader.py" />
     <Compile Include="appModules\terminal64\__init__.py" />
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,18 @@
 # NVDA Add-on: Talking Meta Trader 
-# Copyright (C) 2025, Angeliberta Software
+# Copyright (C) 2026, Angeliberta Software
 # This add-on is free software, licensed under the terms of the GNU General Public License (version 2).
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
 
-import socket
-from _thread import start_new_thread
+import os
+import sys
+
+PLUGIN_DIR = os.path.dirname(__file__)
+LIB_DIR = os.path.join(PLUGIN_DIR, "lib")
+if LIB_DIR not in sys.path:
+	sys.path.insert(0, LIB_DIR)
+
+import MetaTrader5 as mt5
 import appModuleHandler
 import api
 from scriptHandler import script
@@ -13,6 +20,8 @@ from logHandler import log
 from ui import message
 from controlTypes import role
 import addonHandler
+from . import reader
+
 
 try:
 	addonHandler.initTranslation()
@@ -26,7 +35,11 @@ class AppModule(appModuleHandler.AppModule):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		pass
+		if not mt5.initialize():
+			log.error("Failed to connect to MT5")
+			mt5.shutdown()
+		else:
+			log.info(f'MT5 connected. Version: {mt5.version()}')
 
 	def getElements(self):
 		return api.getForegroundObject().children
@@ -34,25 +47,6 @@ class AppModule(appModuleHandler.AppModule):
 	def processTitle(self):
 		titleElements = api.getForegroundObject().name.split("-")
 		return titleElements[len(titleElements) - 1].strip()
-
-	def callChartReader(self):
-		client = socket.socket()
-		hostName = socket.gethostname()
-		port = 5678
-		try:
-			client.connect((hostName, port))
-			data = self.processTitle().encode()
-			client.send(data)
-			response = client.recv(1024).decode()
-			if not response == "ok":
-				# Translators: Error when the addon failed to send a message to ChartReader.
-				message(_("Failed to connect to chart reader"))
-				log.error("Failed to connect to chart reader")
-			client.close()
-		except Exception as e:
-			# Translators: Error when the addon failed to send a message to ChartReader.
-			message(_("Failed to connect to chart reader"))
-			log.error("Failed to connect to chart reader. " + str(e))
 
 	# Translators: Gesture description.
 	@script(description=_("Announce current profile"), gesture="kb:control+p", category=GESTURE_CATEGORY_NAME)
@@ -117,4 +111,5 @@ class AppModule(appModuleHandler.AppModule):
 	# Translators: Gesture description.
 	@script(description=_("Send symbol and timeframe info to chart reader app"), gesture="kb:control+shift+0", category=GESTURE_CATEGORY_NAME)
 	def script_callChartReader(self, gesture):
-		start_new_thread(AppModule.callChartReader, (self, ))
+		data = self.processTitle()
+		reader.recieve_data(data)
