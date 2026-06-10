@@ -113,3 +113,114 @@ class AppModule(appModuleHandler.AppModule):
 	def script_callChartReader(self, gesture):
 		data = self.processTitle()
 		reader.recieve_data(data)
+
+	# Translators: Gesture description.
+	@script(description=_("Speak current chart info"), gesture="kb:control+I", category=GESTURE_CATEGORY_NAME)
+	def script_chartInfo(self, gesture):
+		if not reader.symbol == "" or not reader.timeFrame== "":
+			message(f"{reader.symbol} {reader.timeFrame}")
+		else:
+			message("Currently there is no any chart data loaded.")
+
+	# Translators: Gesture description.
+	@script(description=_("Go to first bar"), gesture="kb:control+shift+Q", category=GESTURE_CATEGORY_NAME)
+	def script_goToFirstBar(self, gesture):
+		reader.playFirstBar()
+
+	# Translators: Gesture description.
+	@script(description=_("Go to last bar"), gesture="kb:control+shift+E", category=GESTURE_CATEGORY_NAME)
+	def script_goToLastBar(self, gesture):
+		reader.playLastBar()
+
+	# Translators: Gesture description.
+	@script(description=_("Go 5 bars back"), gesture="kb:shift+Q", category=GESTURE_CATEGORY_NAME)
+	def script_goTo5BarsBack(self, gesture):
+		reader.goXBarsBack(5)
+
+	# Translators: Gesture description.
+	@script(description=_("Go 5 bars forward"), gesture="kb:shift+E", category=GESTURE_CATEGORY_NAME)
+	def script_goTo5BarsForvard(self, gesture):
+		reader.goXBarsForward(5)
+
+	# Translators: Gesture description.
+	@script(description=_("Go 12 bars back"), gesture="kb:control+Q", category=GESTURE_CATEGORY_NAME)
+	def script_goTo12BarsBack(self, gesture):
+		reader.goXBarsBack(12)
+
+	# Translators: Gesture description.
+	@script(description=_("Go 12 bars forward"), gesture="kb:control+E", category=GESTURE_CATEGORY_NAME)
+	def script_goTo12BarsForward(self, gesture):
+		reader.goXBarsForward(12)
+
+	# Translators: Gesture description.
+	@script(description=_("Previous bar"), gesture="kb:Q", category=GESTURE_CATEGORY_NAME)
+	def script_previousBar(self, gesture):
+		reader.playPreviousBar()
+		#crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+		#if not crossingLevel == 0 and self.announceCrossingLevels_checkbox.GetValue(): self.speak(f'Crossing level {crossingLevel}')
+
+	# Translators: Gesture description.
+	@script(description=_("Next bar"), gesture="kb:E", category=GESTURE_CATEGORY_NAME)
+	def script_nextBar(self, gesture):
+		reader.playNextBar()
+		#crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+		#if not crossingLevel == 0 and self.announceCrossingLevels_checkbox.GetValue(): self.speak(f'Crossing level {crossingLevel}')
+
+	# Use ruler
+
+	# Add level
+
+	# Delete level
+
+	# Next level
+
+	# Previous level
+
+	# Closest level
+
+# Translators: Gesture description.
+	@script(description=_("Say open price"), gesture="kb:A", category=GESTURE_CATEGORY_NAME)
+	def script_sayOpenPrice(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say close price"), gesture="kb:D", category=GESTURE_CATEGORY_NAME)
+	def script_sayClosePrice(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.CLOSE_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say low"), gesture="kb:S", category=GESTURE_CATEGORY_NAME)
+	def script_sayLow(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.LOW_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say high"), gesture="kb:W", category=GESTURE_CATEGORY_NAME)
+	def script_sayHigh(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.HIGH_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say date"), gesture="kb:F", category=GESTURE_CATEGORY_NAME)
+	def script_sayDate(self, gesture):
+		message(str(datetime.utcfromtimestamp(reader.getCurrentBarInfo(reader.TIME_COLUMN))))
+
+	# Translators: Gesture description.
+	@script(description=_("Say volume"), gesture="kb:V", category=GESTURE_CATEGORY_NAME)
+	def script_sayVolume(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.TICK_VOLUME_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say current price"), gesture="kb:C", category=GESTURE_CATEGORY_NAME)
+	def script_sayCurrentPrice(self, gesture):
+		message(str(reader.getCurrentPrice()))
+
+	# Say last output
+
+	# Play preview
+
+# Delete a marker
+
+# Plase a marker
+
+# Go to next marker
+
+# Go to previous marker
