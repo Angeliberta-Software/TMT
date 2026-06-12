@@ -20,7 +20,9 @@ from logHandler import log
 from ui import message
 from controlTypes import role
 import addonHandler
+from datetime import datetime
 from . import reader
+from . import instruments
 
 
 try:
@@ -40,6 +42,8 @@ class AppModule(appModuleHandler.AppModule):
 			mt5.shutdown()
 		else:
 			log.info(f'MT5 connected. Version: {mt5.version()}')
+		self.ruler = instruments.Ruler()
+		self.announceCrossingLevels = False
 
 	def getElements(self):
 		return api.getForegroundObject().children
@@ -105,7 +109,9 @@ class AppModule(appModuleHandler.AppModule):
 
 	def event_gainFocus(self, obj, nextHandler):
 		if obj.role == role.Role.PANE:
-			message(self.processTitle())
+			data = self.processTitle()
+			message(data)
+			reader.recieve_data(data)
 		nextHandler()
 
 	# Translators: Gesture description.
@@ -156,29 +162,88 @@ class AppModule(appModuleHandler.AppModule):
 	@script(description=_("Previous bar"), gesture="kb:Q", category=GESTURE_CATEGORY_NAME)
 	def script_previousBar(self, gesture):
 		reader.playPreviousBar()
-		#crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
-		#if not crossingLevel == 0 and self.announceCrossingLevels_checkbox.GetValue(): self.speak(f'Crossing level {crossingLevel}')
+		crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+		if not crossingLevel == 0 and self.announceCrossingLevels: message(f'Crossing level {crossingLevel}')
 
 	# Translators: Gesture description.
 	@script(description=_("Next bar"), gesture="kb:E", category=GESTURE_CATEGORY_NAME)
 	def script_nextBar(self, gesture):
 		reader.playNextBar()
-		#crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
-		#if not crossingLevel == 0 and self.announceCrossingLevels_checkbox.GetValue(): self.speak(f'Crossing level {crossingLevel}')
+		crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+		if not crossingLevel == 0 and self.announceCrossingLevels: message(f'Crossing level {crossingLevel}')
 
-	# Use ruler
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by open price"), gesture="kb:control+A", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByOpen(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.OPEN_COLUMN), reader.currentBar)
 
-	# Add level
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by close price"), gesture="kb:control+D", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByClose(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.CLOSE_COLUMN), reader.currentBar)
 
-	# Delete level
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by low price"), gesture="kb:control+S", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByLow(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.currentBar)
 
-	# Next level
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by high price"), gesture="kb:control+W", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByHigh(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.HIGH_COLUMN), reader.currentBar)
 
-	# Previous level
+	# Translators: Gesture description.
+	@script(description=_("Add level by low price"), gesture="kb:shift+s", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByLow(self, gesture):
+		price = reader.getCurrentBarInfo(reader.LOW_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
 
-	# Closest level
+	# Translators: Gesture description.
+	@script(description=_("Add level by high price"), gesture="kb:shift+W", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByHigh(self, gesture):
+		price = reader.getCurrentBarInfo(reader.HIGH_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
 
-# Translators: Gesture description.
+	# Translators: Gesture description.
+	@script(description=_("Add level by open price"), gesture="kb:shift+A", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByOpen(self, gesture):
+		price = reader.getCurrentBarInfo(reader.OPEN_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
+
+	# Translators: Gesture description.
+	@script(description=_("Add level by close price"), gesture="kb:shift+D", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByClose(self, gesture):
+		price = reader.getCurrentBarInfo(reader.CLOSE_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
+
+	# Translators: Gesture description.
+	@script(description=_("Delete level"), gesture="kb:shift+L", category=GESTURE_CATEGORY_NAME)
+	def script_deleteLevel(self, gesture):
+		if instruments.deleteLevel(): message('Level deleted.')
+		else: message('No levels.')
+
+	# Translators: Gesture description.
+	@script(description=_("Next level"), gesture="kb:T", category=GESTURE_CATEGORY_NAME)
+	def script_nextLevel(self, gesture):
+		self.processLevels(1)
+
+	# Translators: Gesture description.
+	@script(description=_("Previous level"), gesture="kb:G", category=GESTURE_CATEGORY_NAME)
+	def script_previousLevel(self, gesture):
+		self.processLevels(-1)
+
+	# Translators: Gesture description.
+	@script(description=_("Closest level"), gesture="kb:L", category=GESTURE_CATEGORY_NAME)
+	def script_closestLevel(self, gesture):
+		closestLevel = instruments.getClosestLevel(reader.getCurrentPrice())
+		if not closestLevel == 0: message(str(closestLevel))
+		else: message('No levels')
+
+	# Translators: Gesture description.
 	@script(description=_("Say open price"), gesture="kb:A", category=GESTURE_CATEGORY_NAME)
 	def script_sayOpenPrice(self, gesture):
 		message(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
@@ -213,14 +278,74 @@ class AppModule(appModuleHandler.AppModule):
 	def script_sayCurrentPrice(self, gesture):
 		message(str(reader.getCurrentPrice()))
 
-	# Say last output
+	# Translators: Gesture description.
+	@script(description=_("Play preview"), gesture="kb:P", category=GESTURE_CATEGORY_NAME)
+	def script_playPreview(self, gesture):
+		reader.playPreview()
 
-	# Play preview
+	# Translators: Gesture description.
+	@script(description=_("Delete a marker"), gesture="kb:shift+M", category=GESTURE_CATEGORY_NAME)
+	def script_deleteMarker(self, gesture):
+		result = instruments.deleteMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
+		if result: message('Marker deleted.')
+		else: message('No marker selected.')
 
-# Delete a marker
+	# Translators: Gesture description.
+	@script(description=_("Plase a marker"), gesture="kb:M", category=GESTURE_CATEGORY_NAME)
+	def script_placeMarker(self, gesture):
+		instruments.addMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
+		message('Marker set')
 
-# Plase a marker
+	# Translators: Gesture description.
+	@script(description=_("Go to next marker"), gesture="kb:]", category=GESTURE_CATEGORY_NAME)
+	def script_goToNextMarker(self, gesture):
+		self.processMarkers(1)
 
-# Go to next marker
+	# Translators: Gesture description.
+	@script(description=_("Go to previous marker"), gesture="kb:[", category=GESTURE_CATEGORY_NAME)
+	def script_goToPreviousMarker(self, gesture):
+		self.processMarkers(-1)
 
-# Go to previous marker
+	# Translators: Gesture description.
+	@script(description=_("Toggle announce crossing levels"), gesture="kb:control+L", category=GESTURE_CATEGORY_NAME)
+	def script_toggleAnnounceCrossingLevels(self, gesture):
+		if self.announceCrossingLevels:
+			self.announceCrossingLevels = False
+			message('Announce crossing levels off')
+		else:
+			self.announceCrossingLevels = True
+			message('Announce crossing levels on')
+
+	# Translators: Gesture description.
+	@script(description=_("Toggle play high/low"), gesture="kb:control+C", category=GESTURE_CATEGORY_NAME)
+	def script_togglePlayHighLow(self, gesture):
+		if reader.play_high_low:
+			reader.play_high_low = False
+			message('Play high/low off')
+		else:
+			reader.play_high_low = True
+			message('Play high/low on')
+
+	def processMarkers(self, direction):
+		date = 0
+		if direction == 1: date = instruments.nextMarker()
+		if direction == -1: date = instruments.previousMarker()
+		if not date == 0:
+			for i in range(0, len(reader.dataSet)):
+				if reader.dataSet[i][reader.TIME_COLUMN] == date:
+					reader.goToBarById(i)
+
+	def processRuler(self, price, barIndex):
+		if not self.ruler.activated:
+			self.ruler.activate(price, barIndex)
+			message('Ruler start marker set.')
+		else:
+			priceDifference, barDifference = self.ruler.calculate(price, barIndex)
+			message(f'{str(priceDifference)}, {str(barDifference)}')
+
+	def  processLevels(self, direction):
+		price = 0
+		if direction == 1: price = instruments.nextLevel()
+		if direction == -1: price = instruments.previousLevel()
+		if not price == 0: message(str(price))
+		else: message('No levels.')

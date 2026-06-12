@@ -1,5 +1,5 @@
-import logging
-from pydantic import BaseModel
+from logHandler import log
+from pydantic import BaseModel, validator
 from typing import List
 import json
 import os
@@ -40,8 +40,6 @@ class Storage(BaseModel):
 	levels : List[float]
 
 
-logger = logging.getLogger(__name__)
-
 storage = None
 fileName = ''
 currentMarker = 0
@@ -49,16 +47,17 @@ currentLevel = 0
 
 def initialize(symbol, timeframe):
 	global fileName, storage, currentMarker, currentLevel
-	logger.info('Initializing instruments...')
-	fileName = f'{symbol}_{timeframe}.json'
-	logger.info(f'File to use: {fileName}')
+	log.info('Initializing instruments...')
+	pluginDir = os.path.dirname(__file__)
+	fileName = os.path.join(pluginDir, f'{symbol}_{timeframe}.json')
+	log.info(f'File to use: {fileName}')
 	if os.path.isfile(fileName):
-		logger.info('File exists, openning...')
+		log.info('File exists, openning...')
 		with open(fileName, 'r', encoding='utf-8') as f:
 			jsonData = f.read()
-			storage = Storage.model_validate_json(jsonData)
+			storage = Storage.parse_raw(jsonData)
 	else:
-		logger.info('File does not exists, creating new object...')
+		log.info('File does not exists, creating new object...')
 		storage = Storage(markers=[], levels=[])
 	currentMarker = 0
 	currentLevel = 0
@@ -67,9 +66,11 @@ def updateFile():
 	global storage, fileName
 	try:
 		with open(fileName, 'w', encoding='utf-8') as f:
-			f.write(storage.model_dump_json(indent=4))
+			storage.markers = [int(x) for x in storage.markers]
+			storage.levels = [float(x) for x in storage.levels]
+			f.write(storage.json())
 	except Exception as e:
-		logger.error(f'Failed to write to file {fileName}.', exc_info=True)
+		log.error(f'Failed to write to file {fileName}.', exc_info=True)
 
 def addMarker(date):
 	global storage

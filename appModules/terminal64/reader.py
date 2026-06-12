@@ -7,7 +7,7 @@ import math
 import winsound
 import time
 import threading
-#import instruments
+from . import instruments
 
 
 # Globals
@@ -196,7 +196,7 @@ def recieve_data(serverMessage):
 			if data[HIGH_COLUMN] > maxPrice: maxPrice = data[HIGH_COLUMN]
 			if data[LOW_COLUMN] < minPrice: minPrice = data[LOW_COLUMN]
 		log.info(f'Last bar index: {lastBar}. Min price: {minPrice}. Max price: {maxPrice}')
-		#instruments.initialize(symbol, timeFrame )
-		playBar()
+		instruments.initialize(symbol, timeFrame )
+		#playBar()
 	except Exception as e:
 		log.error('Unexpected error. ', exc_info=True)
