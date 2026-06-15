@@ -20,6 +20,8 @@ from logHandler import log
 from ui import message
 from controlTypes import role
 import addonHandler
+import wx
+import gui
 from datetime import datetime
 from . import reader
 from . import instruments
@@ -325,6 +327,33 @@ class AppModule(appModuleHandler.AppModule):
 		else:
 			reader.play_high_low = True
 			message('Play high/low on')
+
+	# Translators: Gesture description.
+	@script(description=_("Set bars count to read"), gesture="kb:control+B", category=GESTURE_CATEGORY_NAME)
+	def script_setBarsCount(self, gesture):
+		def showTextInput():
+			dialog = wx.TextEntryDialog(
+				parent=None,
+				message="Enter bars count to read:",
+				caption="Bars count",
+				value=""
+				)
+
+			dialog.ShowModal()
+			text = dialog.Value
+			try:
+				reader.number_of_bars_to_recieve = int(text)
+			except:
+				gui.messageBox(
+					"You must enter an integer number",
+					"Error",
+					wx.OK | wx.ICON_ERROR
+					)
+
+			dialog.Destroy()
+
+		wx.CallAfter(showTextInput)
+		reader.recieve_data(self.processTitle())
 
 	def processMarkers(self, direction):
 		date = 0
