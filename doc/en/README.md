@@ -96,6 +96,7 @@ To navigate forward and backward, as well as to hear the numerical price values,
 - **P** – Play preview.
 - **Ctrl + C** – Toggle play high/low.
 - **Ctrl + L** – Announce crossing levels.
+- **Ctrl + B** – Set bars count to read. Try to Alt+Tab if this dialog is not in focus.
 
 ## Donation
 
