@@ -128,7 +128,8 @@ class AppModule(appModuleHandler.AppModule):
 		if not reader.symbol == "" or not reader.timeFrame== "":
 			message(f"{reader.symbol} {reader.timeFrame}")
 		else:
-			message("Currently there is no any chart data loaded.")
+			# Translators: Error message when no data loaded
+			message(_("Currently there is no any chart data loaded."))
 
 	# Translators: Gesture description.
 	@script(description=_("Go to first bar"), gesture="kb:control+shift+Q", category=GESTURE_CATEGORY_NAME)
@@ -225,8 +226,12 @@ class AppModule(appModuleHandler.AppModule):
 	# Translators: Gesture description.
 	@script(description=_("Delete level"), gesture="kb:shift+L", category=GESTURE_CATEGORY_NAME)
 	def script_deleteLevel(self, gesture):
-		if instruments.deleteLevel(): message('Level deleted.')
-		else: message('No levels.')
+		if instruments.deleteLevel():
+			# Translators:Message when level was deleted
+			message(_('Level deleted.'))
+		else:
+			# Translators: Message when there is no levels to delete
+			message(_('No levels.'))
 
 	# Translators: Gesture description.
 	@script(description=_("Next level"), gesture="kb:T", category=GESTURE_CATEGORY_NAME)
@@ -243,7 +248,9 @@ class AppModule(appModuleHandler.AppModule):
 	def script_closestLevel(self, gesture):
 		closestLevel = instruments.getClosestLevel(reader.getCurrentPrice())
 		if not closestLevel == 0: message(str(closestLevel))
-		else: message('No levels')
+		else:
+			# Translators: Message when there is no levels to announce
+			message(_('No levels'))
 
 	# Translators: Gesture description.
 	@script(description=_("Say open price"), gesture="kb:A", category=GESTURE_CATEGORY_NAME)
@@ -289,14 +296,19 @@ class AppModule(appModuleHandler.AppModule):
 	@script(description=_("Delete a marker"), gesture="kb:shift+M", category=GESTURE_CATEGORY_NAME)
 	def script_deleteMarker(self, gesture):
 		result = instruments.deleteMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
-		if result: message('Marker deleted.')
-		else: message('No marker selected.')
+		if result:
+			# Translators: Message when marker was deleted
+			message(_('Marker deleted.'))
+		else:
+			# Translators: Message when there is no marker to delete
+			message(_('No marker selected.'))
 
 	# Translators: Gesture description.
 	@script(description=_("Plase a marker"), gesture="kb:M", category=GESTURE_CATEGORY_NAME)
 	def script_placeMarker(self, gesture):
 		instruments.addMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
-		message('Marker set')
+		# Translators: Message when marker was placed
+		message(_('Marker set'))
 
 	# Translators: Gesture description.
 	@script(description=_("Go to next marker"), gesture="kb:]", category=GESTURE_CATEGORY_NAME)
@@ -313,20 +325,24 @@ class AppModule(appModuleHandler.AppModule):
 	def script_toggleAnnounceCrossingLevels(self, gesture):
 		if self.announceCrossingLevels:
 			self.announceCrossingLevels = False
-			message('Announce crossing levels off')
+			# Translators: Message when crossing levels announcement turned off
+			message(_('Announce crossing levels off'))
 		else:
 			self.announceCrossingLevels = True
-			message('Announce crossing levels on')
+			# Translators: Message when crossing levels announcement turned on
+			message(_('Announce crossing levels on'))
 
 	# Translators: Gesture description.
 	@script(description=_("Toggle play high/low"), gesture="kb:control+C", category=GESTURE_CATEGORY_NAME)
 	def script_togglePlayHighLow(self, gesture):
 		if reader.play_high_low:
 			reader.play_high_low = False
-			message('Play high/low off')
+			# Translators: Message when play high/low turned off
+			message(_('Play high/low off'))
 		else:
 			reader.play_high_low = True
-			message('Play high/low on')
+			# Translators: Message when play high/low turned on
+			message(_('Play high/low on'))
 
 	# Translators: Gesture description.
 	@script(description=_("Set bars count to read"), gesture="kb:control+B", category=GESTURE_CATEGORY_NAME)
@@ -334,7 +350,8 @@ class AppModule(appModuleHandler.AppModule):
 		def showTextInput():
 			dialog = wx.TextEntryDialog(
 				parent=None,
-				message="Enter bars count to read:",
+				# Translators: Prompt for bars count input
+				message = _("Enter bars count to read:"),
 				caption="Bars count",
 				value=""
 				)
@@ -345,7 +362,8 @@ class AppModule(appModuleHandler.AppModule):
 				reader.number_of_bars_to_recieve = int(text)
 			except:
 				gui.messageBox(
-					"You must enter an integer number",
+					# Translators: Error message when input is not an integer number
+					_("You must enter an integer number"),
 					"Error",
 					wx.OK | wx.ICON_ERROR
 					)
@@ -367,7 +385,8 @@ class AppModule(appModuleHandler.AppModule):
 	def processRuler(self, price, barIndex):
 		if not self.ruler.activated:
 			self.ruler.activate(price, barIndex)
-			message('Ruler start marker set.')
+			# Translators: Message when ruler activated
+			message(_('Ruler start marker set.'))
 		else:
 			priceDifference, barDifference = self.ruler.calculate(price, barIndex)
 			message(f'{str(priceDifference)}, {str(barDifference)}')
@@ -377,4 +396,6 @@ class AppModule(appModuleHandler.AppModule):
 		if direction == 1: price = instruments.nextLevel()
 		if direction == -1: price = instruments.previousLevel()
 		if not price == 0: message(str(price))
-		else: message('No levels.')
+		else:
+			# Translators: Message when there is no levels to announce
+			message(_('No levels.'))
