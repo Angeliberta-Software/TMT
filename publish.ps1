@@ -1,10 +1,7 @@
-$version = "1.1.1"
+$version = "2.0.0"
 
 $publishPath = "publish"
 $manifestPath = "manifest.ini"
-$chartReaderBuild = ".\\build.bat"
-$chartReaderExe = "ChartReader\dist\ChartReader.exe"
-$targetExe = Join-Path $publishPath "ChartReader.exe"
 
 function Check-Success {
     param ([string]$message)
@@ -48,15 +45,12 @@ Check-Success "Failed to create appModules\terminal64."
 
 Copy-Item "appModules\terminal64\__init__.py" -Destination $initTargetDir
 Check-Success "Failed to copy __init__.py."
-
-Push-Location "ChartReader"
-& $chartReaderBuild
-Check-Success "ChartReader build.bat failed."
-Pop-Location
-
-
-Copy-Item $chartReaderExe -Destination $targetExe
-Check-Success "Failed to copy ChartReader.exe to publish."
+Copy-Item "appModules\terminal64\instruments.py" -Destination $initTargetDir
+Check-Success "Failed to copy instruments.py."
+Copy-Item "appModules\terminal64\reader.py" -Destination $initTargetDir
+Check-Success "Failed to copy reader.py."
+Copy-Item "appModules\terminal64\lib" -Destination $initTargetDir -Recurse
+Check-Success "Failed to copy lib."
 
 $zipName = "release-$version.zip"
 $addonName = "TMT-v$version.nvda-addon"

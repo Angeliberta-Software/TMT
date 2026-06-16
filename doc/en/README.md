@@ -4,11 +4,12 @@ An NVDA plugin for Meta Trader 5
 
 Allows to navigate in Meta Trader 5 using hot keys.
 
-This addon comes with a standalone application called ChartReader.ChartReader can read chart data from MetaTrader and convert it into an HTML table or represent it as sound tones, helping blind users understand trends, levels, and figures.
+Also this addon can read chart data from MetaTrader and represent it as sound tones, helping blind users understand trends, levels, and figures.
 
 ## Requirements
 
- Meta Trader 5 x64 version 5.00 build 5100 6 Jun 2025
+ * Latest version of Meta Trader 5 x64.
+ * NVDA 2026 and higher.
  
 ## Basic Navigation
 
@@ -29,33 +30,25 @@ Appropriate checkboxes should be checked in the View menu and all panels should 
 * Control+0: terminal current time.
 * NVDA+T: announces an active chart instrument instead of long account number and company name.
 
-## Chart Reader
+## Chart Reading
 
-This addon comes with a standalone application called ChartReader.
+Open a new chart or control tab to a chart you want to read.
 
-ChartReader can read chart data from MetaTrader and convert it into an HTML table or represent it as sound tones, helping blind users understand trends, levels, and figures.
+Use the "Q" and "E" keys to hear bars as sound tones.
 
-To start, run ChartReader.exe located in the addon's folder. If you see a Windows security warning, you can safely ignore it. You may also create a desktop shortcut for quicker access in the future.
-
-Click the "Initialize MetaTrader" button. This will also launch the MetaTrader application if it is not already running.
-
-In MetaTrader, press Control + Shift + 0. You should hear a couple of beeps.
-
-Now, in ChartReader, you can either click the "Show in table" button to view the data in table format or use the "Q" and "E" keys to hear bars as sound tones.
-
-As soon as ChartReader receives data from MetaTrader, it will play the most recent bar from the chart (today's bar if the chart is set to daily). Use "Q" to move left (backward) and "E" to move right (forward).
+Use "Q" to move left (backward) and "E" to move right (forward).
 
 Each time you move from bar to bar, you will hear two tones:
 * The first tone represents the open price.
 * The second tone represents the close price.
 
-If you check the "Play high/low" checkbox, you will hear four tones instead:
+If you enable  "Play high/low" option (control+C), you will hear four tones instead:
 * For a bear bar (closing price lower than opening price): open, close, high, and low.
 * For a bull bar (closing price higher than opening price): open, close, low, and high.
 
 To navigate forward and backward, as well as to hear the numerical price values, use the following key combinations:
 
-### Keyboard Shortcuts for ChartReader
+### Keyboard Shortcuts for Chart Reading
 
 #### Navigation
 
@@ -101,8 +94,14 @@ To navigate forward and backward, as well as to hear the numerical price values,
 #### Other Functions
 
 - **P** – Play preview.
-- **R** – Say last output
+- **Ctrl + C** – Toggle play high/low.
+- **Ctrl + L** – Announce crossing levels.
+- **Ctrl + B** – Set bars count to read. Try to Alt+Tab if this dialog is not in focus.
 
-## **Disclaimer**
+## Donation
 
-By using this add-on and the accompanying software, the user assumes full responsibility and fully accepts all possible risks associated with the use of this software. The authors of the software bear no liability for any potential financial losses or any other harm caused by decisions made based on information obtained through the use of this software. The user uses this software entirely at their own risk and under their sole responsibility.
+If you find this addon useful fill free to donate using this link: https://www.paypal.me/vladimirsuhhorukov
+
+## Disclaimer
+
+By using this addon the user assumes full responsibility and fully accepts all possible risks associated with the use of this software. The authors of the software bear no liability for any potential financial losses or any other harm caused by decisions made based on information obtained through the use of this software. The user uses this software entirely at their own risk and under their sole responsibility.

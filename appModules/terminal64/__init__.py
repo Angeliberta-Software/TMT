@@ -1,11 +1,18 @@
 # NVDA Add-on: Talking Meta Trader 
-# Copyright (C) 2025, Angeliberta Software
+# Copyright (C) 2026, Angeliberta Software
 # This add-on is free software, licensed under the terms of the GNU General Public License (version 2).
 # For more details see: https://www.gnu.org/licenses/gpl-2.0.html
 
 
-import socket
-from _thread import start_new_thread
+import os
+import sys
+
+PLUGIN_DIR = os.path.dirname(__file__)
+LIB_DIR = os.path.join(PLUGIN_DIR, "lib")
+if LIB_DIR not in sys.path:
+	sys.path.insert(0, LIB_DIR)
+
+import MetaTrader5 as mt5
 import appModuleHandler
 import api
 from scriptHandler import script
@@ -13,6 +20,12 @@ from logHandler import log
 from ui import message
 from controlTypes import role
 import addonHandler
+import wx
+import gui
+from datetime import datetime
+from . import reader
+from . import instruments
+
 
 try:
 	addonHandler.initTranslation()
@@ -26,7 +39,13 @@ class AppModule(appModuleHandler.AppModule):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		pass
+		if not mt5.initialize():
+			log.error("Failed to connect to MT5")
+			mt5.shutdown()
+		else:
+			log.info(f'MT5 connected. Version: {mt5.version()}')
+		self.ruler = instruments.Ruler()
+		self.announceCrossingLevels = False
 
 	def getElements(self):
 		return api.getForegroundObject().children
@@ -34,25 +53,6 @@ class AppModule(appModuleHandler.AppModule):
 	def processTitle(self):
 		titleElements = api.getForegroundObject().name.split("-")
 		return titleElements[len(titleElements) - 1].strip()
-
-	def callChartReader(self):
-		client = socket.socket()
-		hostName = socket.gethostname()
-		port = 5678
-		try:
-			client.connect((hostName, port))
-			data = self.processTitle().encode()
-			client.send(data)
-			response = client.recv(1024).decode()
-			if not response == "ok":
-				# Translators: Error when the addon failed to send a message to ChartReader.
-				message(_("Failed to connect to chart reader"))
-				log.error("Failed to connect to chart reader")
-			client.close()
-		except Exception as e:
-			# Translators: Error when the addon failed to send a message to ChartReader.
-			message(_("Failed to connect to chart reader"))
-			log.error("Failed to connect to chart reader. " + str(e))
 
 	# Translators: Gesture description.
 	@script(description=_("Announce current profile"), gesture="kb:control+p", category=GESTURE_CATEGORY_NAME)
@@ -111,10 +111,291 @@ class AppModule(appModuleHandler.AppModule):
 
 	def event_gainFocus(self, obj, nextHandler):
 		if obj.role == role.Role.PANE:
-			message(self.processTitle())
+			data = self.processTitle()
+			message(data)
+			reader.recieve_data(data)
 		nextHandler()
 
 	# Translators: Gesture description.
 	@script(description=_("Send symbol and timeframe info to chart reader app"), gesture="kb:control+shift+0", category=GESTURE_CATEGORY_NAME)
 	def script_callChartReader(self, gesture):
-		start_new_thread(AppModule.callChartReader, (self, ))
+		data = self.processTitle()
+		reader.recieve_data(data)
+
+	# Translators: Gesture description.
+	@script(description=_("Speak current chart info"), gesture="kb:control+I", category=GESTURE_CATEGORY_NAME)
+	def script_chartInfo(self, gesture):
+		if not reader.symbol == "" or not reader.timeFrame== "":
+			message(f"{reader.symbol} {reader.timeFrame}")
+		else:
+			# Translators: Error message when no data loaded
+			message(_("Currently there is no any chart data loaded."))
+
+	# Translators: Gesture description.
+	@script(description=_("Go to first bar"), gesture="kb:control+shift+Q", category=GESTURE_CATEGORY_NAME)
+	def script_goToFirstBar(self, gesture):
+		reader.playFirstBar()
+
+	# Translators: Gesture description.
+	@script(description=_("Go to last bar"), gesture="kb:control+shift+E", category=GESTURE_CATEGORY_NAME)
+	def script_goToLastBar(self, gesture):
+		reader.playLastBar()
+
+	# Translators: Gesture description.
+	@script(description=_("Go 5 bars back"), gesture="kb:shift+Q", category=GESTURE_CATEGORY_NAME)
+	def script_goTo5BarsBack(self, gesture):
+		reader.goXBarsBack(5)
+
+	# Translators: Gesture description.
+	@script(description=_("Go 5 bars forward"), gesture="kb:shift+E", category=GESTURE_CATEGORY_NAME)
+	def script_goTo5BarsForvard(self, gesture):
+		reader.goXBarsForward(5)
+
+	# Translators: Gesture description.
+	@script(description=_("Go 12 bars back"), gesture="kb:control+Q", category=GESTURE_CATEGORY_NAME)
+	def script_goTo12BarsBack(self, gesture):
+		reader.goXBarsBack(12)
+
+	# Translators: Gesture description.
+	@script(description=_("Go 12 bars forward"), gesture="kb:control+E", category=GESTURE_CATEGORY_NAME)
+	def script_goTo12BarsForward(self, gesture):
+		reader.goXBarsForward(12)
+
+	# Translators: Gesture description.
+	@script(description=_("Previous bar"), gesture="kb:Q", category=GESTURE_CATEGORY_NAME)
+	def script_previousBar(self, gesture):
+		reader.playPreviousBar()
+		crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+		if not crossingLevel == 0 and self.announceCrossingLevels: message(f'Crossing level {crossingLevel}')
+
+	# Translators: Gesture description.
+	@script(description=_("Next bar"), gesture="kb:E", category=GESTURE_CATEGORY_NAME)
+	def script_nextBar(self, gesture):
+		reader.playNextBar()
+		crossingLevel = instruments.getCrossingLevel(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.getCurrentBarInfo(reader.HIGH_COLUMN))
+		if not crossingLevel == 0 and self.announceCrossingLevels: message(f'Crossing level {crossingLevel}')
+
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by open price"), gesture="kb:control+A", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByOpen(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.OPEN_COLUMN), reader.currentBar)
+
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by close price"), gesture="kb:control+D", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByClose(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.CLOSE_COLUMN), reader.currentBar)
+
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by low price"), gesture="kb:control+S", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByLow(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.LOW_COLUMN), reader.currentBar)
+
+	# Translators: Gesture description.
+	@script(description=_("Use ruler by high price"), gesture="kb:control+W", category=GESTURE_CATEGORY_NAME)
+	def script_useRulerByHigh(self, gesture):
+		self.processRuler(reader.getCurrentBarInfo(reader.HIGH_COLUMN), reader.currentBar)
+
+	# Translators: Gesture description.
+	@script(description=_("Add level by low price"), gesture="kb:shift+s", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByLow(self, gesture):
+		price = reader.getCurrentBarInfo(reader.LOW_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
+
+	# Translators: Gesture description.
+	@script(description=_("Add level by high price"), gesture="kb:shift+W", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByHigh(self, gesture):
+		price = reader.getCurrentBarInfo(reader.HIGH_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
+
+	# Translators: Gesture description.
+	@script(description=_("Add level by open price"), gesture="kb:shift+A", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByOpen(self, gesture):
+		price = reader.getCurrentBarInfo(reader.OPEN_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
+
+	# Translators: Gesture description.
+	@script(description=_("Add level by close price"), gesture="kb:shift+D", category=GESTURE_CATEGORY_NAME)
+	def script_addLevelByClose(self, gesture):
+		price = reader.getCurrentBarInfo(reader.CLOSE_COLUMN)
+		instruments.addLevel(price)
+		message(f'Added level: {price}')
+
+	# Translators: Gesture description.
+	@script(description=_("Delete level"), gesture="kb:shift+L", category=GESTURE_CATEGORY_NAME)
+	def script_deleteLevel(self, gesture):
+		if instruments.deleteLevel():
+			# Translators:Message when level was deleted
+			message(_('Level deleted.'))
+		else:
+			# Translators: Message when there is no levels to delete
+			message(_('No levels.'))
+
+	# Translators: Gesture description.
+	@script(description=_("Next level"), gesture="kb:T", category=GESTURE_CATEGORY_NAME)
+	def script_nextLevel(self, gesture):
+		self.processLevels(1)
+
+	# Translators: Gesture description.
+	@script(description=_("Previous level"), gesture="kb:G", category=GESTURE_CATEGORY_NAME)
+	def script_previousLevel(self, gesture):
+		self.processLevels(-1)
+
+	# Translators: Gesture description.
+	@script(description=_("Closest level"), gesture="kb:L", category=GESTURE_CATEGORY_NAME)
+	def script_closestLevel(self, gesture):
+		closestLevel = instruments.getClosestLevel(reader.getCurrentPrice())
+		if not closestLevel == 0: message(str(closestLevel))
+		else:
+			# Translators: Message when there is no levels to announce
+			message(_('No levels'))
+
+	# Translators: Gesture description.
+	@script(description=_("Say open price"), gesture="kb:A", category=GESTURE_CATEGORY_NAME)
+	def script_sayOpenPrice(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.OPEN_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say close price"), gesture="kb:D", category=GESTURE_CATEGORY_NAME)
+	def script_sayClosePrice(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.CLOSE_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say low"), gesture="kb:S", category=GESTURE_CATEGORY_NAME)
+	def script_sayLow(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.LOW_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say high"), gesture="kb:W", category=GESTURE_CATEGORY_NAME)
+	def script_sayHigh(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.HIGH_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say date"), gesture="kb:F", category=GESTURE_CATEGORY_NAME)
+	def script_sayDate(self, gesture):
+		message(str(datetime.utcfromtimestamp(reader.getCurrentBarInfo(reader.TIME_COLUMN))))
+
+	# Translators: Gesture description.
+	@script(description=_("Say volume"), gesture="kb:V", category=GESTURE_CATEGORY_NAME)
+	def script_sayVolume(self, gesture):
+		message(str(reader.getCurrentBarInfo(reader.TICK_VOLUME_COLUMN)))
+
+	# Translators: Gesture description.
+	@script(description=_("Say current price"), gesture="kb:C", category=GESTURE_CATEGORY_NAME)
+	def script_sayCurrentPrice(self, gesture):
+		message(str(reader.getCurrentPrice()))
+
+	# Translators: Gesture description.
+	@script(description=_("Play preview"), gesture="kb:P", category=GESTURE_CATEGORY_NAME)
+	def script_playPreview(self, gesture):
+		reader.playPreview()
+
+	# Translators: Gesture description.
+	@script(description=_("Delete a marker"), gesture="kb:shift+M", category=GESTURE_CATEGORY_NAME)
+	def script_deleteMarker(self, gesture):
+		result = instruments.deleteMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
+		if result:
+			# Translators: Message when marker was deleted
+			message(_('Marker deleted.'))
+		else:
+			# Translators: Message when there is no marker to delete
+			message(_('No marker selected.'))
+
+	# Translators: Gesture description.
+	@script(description=_("Plase a marker"), gesture="kb:M", category=GESTURE_CATEGORY_NAME)
+	def script_placeMarker(self, gesture):
+		instruments.addMarker(reader.getCurrentBarInfo(reader.TIME_COLUMN))
+		# Translators: Message when marker was placed
+		message(_('Marker set'))
+
+	# Translators: Gesture description.
+	@script(description=_("Go to next marker"), gesture="kb:]", category=GESTURE_CATEGORY_NAME)
+	def script_goToNextMarker(self, gesture):
+		self.processMarkers(1)
+
+	# Translators: Gesture description.
+	@script(description=_("Go to previous marker"), gesture="kb:[", category=GESTURE_CATEGORY_NAME)
+	def script_goToPreviousMarker(self, gesture):
+		self.processMarkers(-1)
+
+	# Translators: Gesture description.
+	@script(description=_("Toggle announce crossing levels"), gesture="kb:control+L", category=GESTURE_CATEGORY_NAME)
+	def script_toggleAnnounceCrossingLevels(self, gesture):
+		if self.announceCrossingLevels:
+			self.announceCrossingLevels = False
+			# Translators: Message when crossing levels announcement turned off
+			message(_('Announce crossing levels off'))
+		else:
+			self.announceCrossingLevels = True
+			# Translators: Message when crossing levels announcement turned on
+			message(_('Announce crossing levels on'))
+
+	# Translators: Gesture description.
+	@script(description=_("Toggle play high/low"), gesture="kb:control+C", category=GESTURE_CATEGORY_NAME)
+	def script_togglePlayHighLow(self, gesture):
+		if reader.play_high_low:
+			reader.play_high_low = False
+			# Translators: Message when play high/low turned off
+			message(_('Play high/low off'))
+		else:
+			reader.play_high_low = True
+			# Translators: Message when play high/low turned on
+			message(_('Play high/low on'))
+
+	# Translators: Gesture description.
+	@script(description=_("Set bars count to read"), gesture="kb:control+B", category=GESTURE_CATEGORY_NAME)
+	def script_setBarsCount(self, gesture):
+		def showTextInput():
+			dialog = wx.TextEntryDialog(
+				parent=None,
+				# Translators: Prompt for bars count input
+				message = _("Enter bars count to read:"),
+				caption="Bars count",
+				value=""
+				)
+
+			dialog.ShowModal()
+			text = dialog.Value
+			try:
+				reader.number_of_bars_to_recieve = int(text)
+			except:
+				gui.messageBox(
+					# Translators: Error message when input is not an integer number
+					_("You must enter an integer number"),
+					"Error",
+					wx.OK | wx.ICON_ERROR
+					)
+
+			dialog.Destroy()
+
+		wx.CallAfter(showTextInput)
+		reader.recieve_data(self.processTitle())
+
+	def processMarkers(self, direction):
+		date = 0
+		if direction == 1: date = instruments.nextMarker()
+		if direction == -1: date = instruments.previousMarker()
+		if not date == 0:
+			for i in range(0, len(reader.dataSet)):
+				if reader.dataSet[i][reader.TIME_COLUMN] == date:
+					reader.goToBarById(i)
+
+	def processRuler(self, price, barIndex):
+		if not self.ruler.activated:
+			self.ruler.activate(price, barIndex)
+			# Translators: Message when ruler activated
+			message(_('Ruler start marker set.'))
+		else:
+			priceDifference, barDifference = self.ruler.calculate(price, barIndex)
+			message(f'{str(priceDifference)}, {str(barDifference)}')
+
+	def  processLevels(self, direction):
+		price = 0
+		if direction == 1: price = instruments.nextLevel()
+		if direction == -1: price = instruments.previousLevel()
+		if not price == 0: message(str(price))
+		else:
+			# Translators: Message when there is no levels to announce
+			message(_('No levels.'))

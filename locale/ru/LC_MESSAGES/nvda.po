@@ -1,16 +1,16 @@
-# TMT addon translation
-# Copyright (C) 2025 Angeliberta Software
-# This file is distributed under the same license as the talkingMetaTrader package.
-# FIRST AUTHOR <vladimirsuhorukov@gmail.com>, 2025.
+# NVDA Add-on Talking Meta Trader translation
+# Copyright (C) 2026 Angeliberta Software
+# This file is distributed under the same license as the Talking Meta Trader package.
+# FIRST AUTHOR <vladimirsuhorukov@gmail.com>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Talking Meta Trader 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-06 20:03+0300\n"
-"PO-Revision-Date: 2025-05-07 09:47+0300\n"
-"Last-Translator: Vladimir Suhhorukov <vladimirsuhorukov@gmail.com>\n"
+"POT-Creation-Date: 2026-06-15 15:22+0300\n"
+"PO-Revision-Date: 2026-06-15 16:22+0300\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -18,52 +18,298 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.6\n"
 
-#. Translators: Error when the addon failed to send a message to ChartReader.
-#: .\__init__.py:52 .\__init__.py:57
-msgid "Failed to connect to chart reader"
-msgstr "Возникла проблема при подключении к ChartReader"
-
 #. Translators: Gesture description.
-#: .\__init__.py:61
+#: .\__init__.py:58
 msgid "Announce current profile"
 msgstr "Озвучить текущий профиль"
 
 #. Translators: Gesture description.
-#: .\__init__.py:73
+#: .\__init__.py:67
 msgid "Focus on toolbox window"
-msgstr "Фокус на окне инструментов"
+msgstr "Фокус на панели инструментов"
 
 #. Translators: Gesture description.
-#: .\__init__.py:81
+#: .\__init__.py:75
 msgid "Focus on data window"
-msgstr "Фокус на окне данных"
+msgstr "Фокус на панели данных"
 
 #. Translators: Gesture description.
-#: .\__init__.py:89
+#: .\__init__.py:80
 msgid "Focus on navigator window"
 msgstr "Фокус на окне навигатора"
 
 #. Translators: Gesture description.
-#: .\__init__.py:97
+#: .\__init__.py:85
 msgid "Focus on market watch window"
-msgstr "Фокус на окне market watch"
+msgstr "Фокус на панели обзора рынка"
 
 #. Translators: Gesture description.
-#: .\__init__.py:105
+#: .\__init__.py:90
 msgid "Focus on Workspace"
 msgstr "Фокус на рабочей области"
 
 #. Translators: Gesture description.
-#: .\__init__.py:113
+#: .\__init__.py:98
 msgid "Announce terminal time"
 msgstr "Озвучить время терминала"
 
 #. Translators: Gesture description.
-#: .\__init__.py:122
+#: .\__init__.py:105
 msgid "Show toolbox tabs."
-msgstr "Показать вкладки окна инструментов"
+msgstr "Показать табы панели инструментов"
 
 #. Translators: Gesture description.
-#: .\__init__.py:141
+#: .\__init__.py:120
 msgid "Send symbol and timeframe info to chart reader app"
-msgstr "Послать символ и таймфрейм в ChartReader"
+msgstr "Отправить данные текущего графика на чтение"
+
+#. Translators: Gesture description.
+#: .\__init__.py:126
+msgid "Speak current chart info"
+msgstr "Озвучить информацию о текущем графике"
+
+#. Translators: Error message when no data loaded
+#: .\__init__.py:132
+msgid "Currently there is no any chart data loaded."
+msgstr "Нет данных для чтения графика"
+
+#. Translators: Gesture description.
+#: .\__init__.py:135
+msgid "Go to first bar"
+msgstr "Перейти к первой свече"
+
+#. Translators: Gesture description.
+#: .\__init__.py:140
+msgid "Go to last bar"
+msgstr "Перейти к последней свече"
+
+#. Translators: Gesture description.
+#: .\__init__.py:145
+msgid "Go 5 bars back"
+msgstr "Перейти на 5 свечей назад"
+
+#. Translators: Gesture description.
+#: .\__init__.py:150
+msgid "Go 5 bars forward"
+msgstr "Перейти на 5 свечей вперёд"
+
+#. Translators: Gesture description.
+#: .\__init__.py:155
+msgid "Go 12 bars back"
+msgstr "Перейти на 12 свечей назад"
+
+#. Translators: Gesture description.
+#: .\__init__.py:160
+msgid "Go 12 bars forward"
+msgstr "Перейти на 12 свечей вперёд"
+
+#. Translators: Gesture description.
+#: .\__init__.py:165
+msgid "Previous bar"
+msgstr "Предыдущая свеча"
+
+#. Translators: Gesture description.
+#: .\__init__.py:172
+msgid "Next bar"
+msgstr "Следующая свеча"
+
+#. Translators: Gesture description.
+#: .\__init__.py:179
+msgid "Use ruler by open price"
+msgstr "Использовать линейку по цене открытия"
+
+#. Translators: Gesture description.
+#: .\__init__.py:184
+msgid "Use ruler by close price"
+msgstr "Использовать линейку по цене закрытия"
+
+#. Translators: Gesture description.
+#: .\__init__.py:189
+msgid "Use ruler by low price"
+msgstr "Использовать линейку по цене минимума"
+
+#. Translators: Gesture description.
+#: .\__init__.py:194
+msgid "Use ruler by high price"
+msgstr "Использовать линейку по цене максимума"
+
+#. Translators: Gesture description.
+#: .\__init__.py:199
+msgid "Add level by low price"
+msgstr "Добавить уровень по цене минимума"
+
+#. Translators: Gesture description.
+#: .\__init__.py:206
+msgid "Add level by high price"
+msgstr "Добавить уровень по цене максимума"
+
+#. Translators: Gesture description.
+#: .\__init__.py:213
+msgid "Add level by open price"
+msgstr "Добавить уровень по цене открытия"
+
+#. Translators: Gesture description.
+#: .\__init__.py:220
+msgid "Add level by close price"
+msgstr "Добавить уровень по цене закрытия"
+
+#. Translators: Gesture description.
+#: .\__init__.py:227
+msgid "Delete level"
+msgstr "Удалить уровень"
+
+#. Translators:Message when level was deleted
+#: .\__init__.py:231
+msgid "Level deleted."
+msgstr "Уровень удалён"
+
+#. Translators: Message when there is no levels to delete
+#. Translators: Message when there is no levels to announce
+#: .\__init__.py:234 .\__init__.py:401
+msgid "No levels."
+msgstr "Нет уровней"
+
+#. Translators: Gesture description.
+#: .\__init__.py:237
+msgid "Next level"
+msgstr "Следующий уровень"
+
+#. Translators: Gesture description.
+#: .\__init__.py:242
+msgid "Previous level"
+msgstr "Предыдущий уровень"
+
+#. Translators: Gesture description.
+#: .\__init__.py:247
+msgid "Closest level"
+msgstr "Ближайший уровень"
+
+#. Translators: Message when there is no levels to announce
+#: .\__init__.py:253
+msgid "No levels"
+msgstr "Нет уровней"
+
+#. Translators: Gesture description.
+#: .\__init__.py:256
+msgid "Say open price"
+msgstr "Озвучить цену открытия"
+
+#. Translators: Gesture description.
+#: .\__init__.py:261
+msgid "Say close price"
+msgstr "Озвучить цену закрытия"
+
+#. Translators: Gesture description.
+#: .\__init__.py:266
+msgid "Say low"
+msgstr "Озвучить минимум"
+
+#. Translators: Gesture description.
+#: .\__init__.py:271
+msgid "Say high"
+msgstr "Озвучить максимум"
+
+#. Translators: Gesture description.
+#: .\__init__.py:276
+msgid "Say date"
+msgstr "Озвучить дату"
+
+#. Translators: Gesture description.
+#: .\__init__.py:281
+msgid "Say volume"
+msgstr "Озвучить объём"
+
+#. Translators: Gesture description.
+#: .\__init__.py:286
+msgid "Say current price"
+msgstr "Озвучить текущую цену"
+
+#. Translators: Gesture description.
+#: .\__init__.py:291
+msgid "Play preview"
+msgstr "Проиграть превью"
+
+#. Translators: Gesture description.
+#: .\__init__.py:296
+msgid "Delete a marker"
+msgstr "Удалить маркер"
+
+#. Translators: Message when marker was deleted
+#: .\__init__.py:301
+msgid "Marker deleted."
+msgstr "Маркер удалён"
+
+#. Translators: Message when there is no marker to delete
+#: .\__init__.py:304
+msgid "No marker selected."
+msgstr "Маркер не выбран"
+
+#. Translators: Gesture description.
+#: .\__init__.py:307
+msgid "Plase a marker"
+msgstr "Установить маркер"
+
+#. Translators: Message when marker was placed
+#: .\__init__.py:311
+msgid "Marker set"
+msgstr "Маркер установлен"
+
+#. Translators: Gesture description.
+#: .\__init__.py:314
+msgid "Go to next marker"
+msgstr "Перейти к следующему маркеру"
+
+#. Translators: Gesture description.
+#: .\__init__.py:319
+msgid "Go to previous marker"
+msgstr "Перейти к предыдущему маркеру"
+
+#. Translators: Gesture description.
+#: .\__init__.py:324
+msgid "Toggle announce crossing levels"
+msgstr "Включить/выключить озвучивание пересечения уровня"
+
+#. Translators: Message when crossing levels announcement turned off
+#: .\__init__.py:329
+msgid "Announce crossing levels off"
+msgstr "Озвучивание пересечения уровня отключено"
+
+#. Translators: Message when crossing levels announcement turned on
+#: .\__init__.py:333
+msgid "Announce crossing levels on"
+msgstr "Озвучивание пересечения уровня включено"
+
+#. Translators: Gesture description.
+#: .\__init__.py:336
+msgid "Toggle play high/low"
+msgstr "Включить/выключить проигрывание максимумов и минимумов"
+
+#. Translators: Message when play high/low turned off
+#: .\__init__.py:341
+msgid "Play high/low off"
+msgstr "Проигрывание максимумов и минимумов отключено"
+
+#. Translators: Message when play high/low turned on
+#: .\__init__.py:345
+msgid "Play high/low on"
+msgstr "Проигрывание максимумов и минимумов включено"
+
+#. Translators: Gesture description.
+#: .\__init__.py:348
+msgid "Set bars count to read"
+msgstr "Установить количество свечей для чтения"
+
+#. Translators: Prompt for bars count input
+#: .\__init__.py:354
+msgid "Enter bars count to read:"
+msgstr "Введите количество свечей:"
+
+#. Translators: Error message when input is not an integer number
+#: .\__init__.py:366
+msgid "You must enter an integer number"
+msgstr "Вы должны ввести целое число"
+
+#. Translators: Message when ruler activated
+#: .\__init__.py:389
+msgid "Ruler start marker set."
+msgstr "Начало измерения установлено"

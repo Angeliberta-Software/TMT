@@ -9,9 +9,10 @@
 <h1>TMT - Talking Meta Trader</h1>
 <p>An NVDA plugin for Meta Trader 5</p>
 <p>Allows to navigate in Meta Trader 5 using hot keys.</p>
-<p>This addon comes with a standalone application called ChartReader.ChartReader can read chart data from MetaTrader and convert it into an HTML table or represent it as sound tones, helping blind users understand trends, levels, and figures.</p>
+<p>Also this addon can read chart data from MetaTrader and represent it as sound tones, helping blind users understand trends, levels, and figures.</p>
 <h2>Requirements</h2>
-<p>Meta Trader 5 x64 version 5.00 build 5100 6 Jun 2025</p>
+<p>Latest version of Meta Trader 5 x64.</p>
+<p>NVDA 2026 and higher.</p>
 <h2>Basic Navigation</h2>
 <h3>Focus</h3>
 <ul>
@@ -29,22 +30,18 @@
 <li>Control+0: terminal current time.</li>
 <li>NVDA+T: announces an active chart instrument instead of long account number and company name.</li>
 </ul>
-<h2>Chart Reader</h2>
-<p>This addon comes with a standalone application called ChartReader.</p>
-<p>ChartReader can read chart data from MetaTrader and convert it into an HTML table or represent it as sound tones, helping blind users understand trends, levels, and figures.</p>
-<p>To start, run ChartReader.exe located in the addon's folder. If you see a Windows security warning, you can safely ignore it. You may also create a desktop shortcut for quicker access in the future.</p>
-<p>Click the "Initialize MetaTrader" button. This will also launch the MetaTrader application if it is not already running.</p>
-<p>In MetaTrader, press Control + Shift + 0. You should hear a couple of beeps.</p>
-<p>Now, in ChartReader, you can either click the "Show in table" button to view the data in table format or use the "Q" and "E" keys to hear bars as sound tones.</p>
-<p>As soon as ChartReader receives data from MetaTrader, it will play the most recent bar from the chart (today's bar if the chart is set to daily). Use "Q" to move left (backward) and "E" to move right (forward).</p>
-<p>Each time you move from bar to bar, you will hear two tones:
-* The first tone represents the open price.
-* The second tone represents the close price.</p>
-<p>If you check the "Play high/low" checkbox, you will hear four tones instead:
-* For a bear bar (closing price lower than opening price): open, close, high, and low.
-* For a bull bar (closing price higher than opening price): open, close, low, and high.</p>
+<h2>Chart Reading</h2>
+<p>Open a new chart or control tab to a chart you want to read.</p>
+<p>Use the "Q" and "E" keys to hear bars as sound tones.</p>
+<p>Use "Q" to move left (backward) and "E" to move right (forward).</p>
+<p>Each time you move from bar to bar, you will hear two tones:</p>
+<p>* The first tone represents the open price.</p>
+<p>* The second tone represents the close price.</p>
+<p>If you enable  "Play high/low" option (control+C), you will hear four tones instead:</p>
+<p>* For a bear bar (closing price lower than opening price): open, close, high, and low.</p>
+<p>* For a bull bar (closing price higher than opening price): open, close, low, and high.</p>
 <p>To navigate forward and backward, as well as to hear the numerical price values, use the following key combinations:</p>
-<h3>Keyboard Shortcuts for ChartReader</h3>
+<h3>Keyboard Shortcuts for Chart Reading</h3>
 <h4>Navigation</h4>
 <ul>
 <li><strong>Ctrl + Shift + I</strong> – Announce current chart and time frame.</li>
@@ -89,9 +86,13 @@
 <h4>Other Functions</h4>
 <ul>
 <li><strong>P</strong> – Play preview.</li>
-<li><strong>R</strong> – Say last output</li>
+<li><strong>Ctrl + C</strong> – Toggle play high/low.</li>
+<li><strong>Ctrl + L</strong> – Announce crossing levels.</li>
+<li><strong>Ctrl + B</strong> – Set bars count to read. Try to Alt+Tab if this dialog is not in focus.</li>
 </ul>
+<h2>Donation</H2>
+<p>If you find this addon useful fill free to donate using this link: https://www.paypal.me/vladimirsuhhorukov</p>
 <h2>Disclaimer</H2>
-<p>By using this add-on and the accompanying software, the user assumes full responsibility and fully accepts all possible risks associated with the use of this software. The authors of the software bear no liability for any potential financial losses or any other harm caused by decisions made based on information obtained through the use of this software. The user uses this software entirely at their own risk and under their sole responsibility.</p>
+<p>By using this add-on the user assumes full responsibility and fully accepts all possible risks associated with the use of this software. The authors of the software bear no liability for any potential financial losses or any other harm caused by decisions made based on information obtained through the use of this software. The user uses this software entirely at their own risk and under their sole responsibility.</p>
 </body>
 </html>
