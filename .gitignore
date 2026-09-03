@@ -168,3 +168,4 @@ cython_debug/
 ChartReader/chart.html
 ChartReader/*_*.json
 Publish/
+TMT-v*.nvda-addon
